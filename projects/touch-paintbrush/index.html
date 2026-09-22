@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="STM32 기반 Touch Paintbrush 드로잉 인터페이스 프로젝트" />
+    <meta name="theme-color" content="#071110" />
+    <title>Touch Paintbrush — 허준범 Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23071110'/%3E%3Cpath d='M17 32h10m10 0h10M32 17v10m0 10v10' stroke='%2375f8d2' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23d5ff75'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="주요 메뉴">
+        <a class="brand" href="/"><span class="brand-mark">HJ</span><span>허준범 / Portfolio</span></a>
+        <ul class="nav-links">
+          <li><a href="/projects/" aria-current="page">Projects</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="project-hero">
+        <div data-reveal>
+          <nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>05</span></nav>
+          <h1>Touch Paintbrush</h1>
+          <p class="lead">터치한 위치에 선을 그리고 엔코더로 색상을 선택할 수 있는 STM32 기반 소형 페인트 인터페이스입니다.</p>
+        </div>
+        <dl class="project-meta" data-reveal>
+          <div><dt>Course</dt><dd>임베디드 소프트웨어</dd></div>
+          <div><dt>Period</dt><dd>2026 겨울학기</dd></div>
+          <div><dt>Type</dt><dd>Individual project</dd></div>
+          <div><dt>Role</dt><dd>드라이버 연동 · 좌표 처리 · UI 구현</dd></div>
+          <div><dt>Platform</dt><dd>STM32F401 / HAL</dd></div>
+          <div><dt>Display</dt><dd>ILI9341 TFT</dd></div>
+          <div><dt>Input</dt><dd>XPT2046 Touch · Rotary Encoder</dd></div>
+        </dl>
+      </header>
+
+      <figure class="project-media" data-reveal>
+        <img src="/assets/images/touch-paintbrush.png" alt="ILI9341 화면, XPT2046 터치 컨트롤러와 STM32 연결 구성" />
+      </figure>
+
+      <section class="project-snapshot" aria-label="Touch Paintbrush 핵심 사양">
+        <article data-reveal><span>Controller</span><strong>STM32F401</strong><small>84 MHz · HAL</small></article>
+        <article data-reveal><span>Display</span><strong>320 × 240</strong><small>ILI9341 · RGB565 · SPI1</small></article>
+        <article data-reveal><span>Touch sample</span><strong>12-bit ADC</strong><small>X · Y · Z1 · Z2 via SPI2</small></article>
+        <article data-reveal><span>Noise control</span><strong>4 stages</strong><small>Range · delta · pressure · EWMA</small></article>
+      </section>
+
+      <nav class="page-toc" aria-label="Touch Paintbrush 페이지 목차" data-reveal>
+        <span>On this page</span>
+        <a href="#paint-demo"><b>01</b> Demo</a>
+        <a href="#paint-report"><b>02</b> Hardware</a>
+        <a href="#paint-deep"><b>03</b> Deep dive</a>
+        <a href="#paint-overview"><b>04</b> Retrospective</a>
+      </nav>
+
+      <section class="demo-section" aria-labelledby="paint-demo">
+        <div data-reveal>
+          <span class="section-index">Demo / 00:56</span>
+          <h2 id="paint-demo">작동 모습</h2>
+          <p>터치 좌표에 따라 선을 그리고 로터리 엔코더로 브러시 색상과 지우개를 바꾸는 과정을 보여줍니다.</p>
+        </div>
+        <div class="demo-frame" data-reveal>
+          <video controls playsinline preload="metadata" poster="/assets/images/touch-demo-poster.jpg">
+            <source src="/assets/videos/touch-paintbrush-demo.mp4" type="video/mp4" />
+            브라우저가 동영상 재생을 지원하지 않습니다.
+          </video>
+        </div>
+      </section>
+
+      <section class="report-showcase" aria-labelledby="paint-report">
+        <div class="report-heading" data-reveal>
+          <div><span class="section-index">Hardware / Input pipeline</span><h2 id="paint-report">주변장치와 좌표 입력 설계</h2></div>
+          <p>LCD와 터치 컨트롤러의 SPI 채널을 나누고, 핀 배치와 변환 타이밍을 확인하며 입력부터 화면 출력까지의 경로를 설계했습니다.</p>
+        </div>
+        <div class="report-grid">
+          <figure class="report-figure" data-reveal>
+            <img src="/assets/images/reports/touch-peripheral-config.png" alt="STM32CubeMX의 GPIO 타이머 SPI 주변장치 구성" />
+            <figcaption>CubeMX에서 GPIO, TIM, SPI1, SPI2를 분리해 디스플레이와 입력 장치의 역할을 구성했습니다.</figcaption>
+          </figure>
+          <figure class="report-figure" data-reveal>
+            <img src="/assets/images/reports/touch-stm32-pinout.png" alt="STM32F401CCUx 핀맵에 설정된 주변장치 핀" />
+            <figcaption>STM32F401CCUx 핀맵에 LCD, 터치, 엔코더 신호를 배치하고 충돌 여부를 확인했습니다.</figcaption>
+          </figure>
+          <figure class="report-figure report-figure-wide" data-reveal>
+            <img src="/assets/images/reports/touch-controller-timing.png" alt="XPT2046 터치 컨트롤러의 12비트 변환 타이밍" />
+            <figcaption>XPT2046의 12-bit 변환 타이밍을 기준으로 명령 전송과 좌표 샘플 읽기 순서를 구현했습니다.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="deep-dive" aria-labelledby="paint-deep">
+        <header class="deep-heading" data-reveal>
+          <div><span class="section-index">Engineering deep dive</span><h2 id="paint-deep">불안정한 센서 값을 좌표로 만들기</h2></div>
+          <p>LCD 출력과 터치 샘플링의 SPI 채널을 분리하고, 원시 ADC 값에 여러 단계의 필터와 좌표 변환을 적용했습니다.</p>
+        </header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>01 / Bus design</span><h3>속도가 다른 두 SPI 경로</h3></div>
+            <div class="deep-card-body">
+              <p>대용량 픽셀 전송이 필요한 LCD와 안정적인 샘플링이 필요한 터치를 별도 SPI 주변장치에 배치했습니다. 각 장치는 소프트웨어 NSS와 독립 CS를 사용합니다.</p>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Peripheral</th><th>Bus</th><th>Prescaler</th><th>Purpose</th></tr></thead>
+                  <tbody>
+                    <tr><td>ILI9341</td><td>SPI1</td><td>÷2</td><td>RGB565 픽셀, 문자열, 16×16 아이콘을 빠르게 전송</td></tr>
+                    <tr><td>XPT2046</td><td>SPI2</td><td>÷32</td><td>24클록 트랜잭션으로 X·Y·Z1·Z2의 12-bit 값을 안정적으로 수신</td></tr>
+                    <tr><td>Rotary encoder</td><td>TIM1 encoder</td><td>Period 7</td><td>카운터 0–7을 8개 색상 인덱스로 직접 사용</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>02 / Touch pipeline</span><h3>좌표 신뢰도를 높이는 4단계</h3></div>
+            <div class="deep-card-body">
+              <p>XPT2046의 PENIRQ가 Low일 때만 데이터를 읽고, 단순 평균 대신 범위·변화량·압력·EWMA를 순차 적용합니다. 손을 떼면 필터 상태를 초기화해 다음 터치가 이전 궤적에 끌려가지 않게 했습니다.</p>
+              <ol class="process-list">
+                <li><strong>유효 범위</strong>X·Y가 150–3950 범위 밖이면 가장자리 노이즈로 보고 제외합니다.</li>
+                <li><strong>스파이크 제한</strong>직전 좌표와의 차이가 한 축이라도 500을 넘으면 순간 튐으로 판단합니다.</li>
+                <li><strong>압력 검사</strong>Z1·Z2로 패널 저항을 계산하고 10–700 범위의 입력만 유효 터치로 인정합니다.</li>
+                <li><strong>EWMA 평활화</strong><code>α = 0.3</code>으로 현재 샘플과 직전 필터값을 결합해 미세 떨림을 줄입니다.</li>
+                <li><strong>화면 좌표 변환</strong>보정 구간을 320×240으로 스케일링한 뒤 가로 방향에 맞게 축을 교환하고 반전합니다.</li>
+              </ol>
+              <pre class="code-sample" aria-label="터치 EWMA와 좌표 변환 코드"><code>filtered = 0.3f * current + 0.7f * previous;
+
+x = (raw_x - 350) * 240 / (3850 - 350);
+y = (raw_y - 400) * 320 / (3900 - 400);
+
+lcd_x = y;
+lcd_y = 239 - x;</code></pre>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>03 / Interaction</span><h3>그리기 도구와 기획 전환</h3></div>
+            <div class="deep-card-body">
+              <p>엔코더로 RED, GREEN, BLUE, WHITE, YELLOW, CYAN, MAGENTA, BLACK을 선택합니다. 일반 색상은 5×5 브러시로, BLACK은 30×30 영역을 덮는 지우개로 사용해 작은 화면에서도 빠르게 수정할 수 있게 했습니다.</p>
+              <ul class="detail-points">
+                <li><strong>상태 표시:</strong> 화면 상단에 보정된 X·Y와 현재 색상 이름을 실시간 출력</li>
+                <li><strong>팔레트:</strong> 화면 하단 30픽셀 바에 16×16 과일 아이콘을 배치해 시각적 UI 구성</li>
+                <li><strong>초기 기획:</strong> 과일 베기 게임의 애니메이션과 물리 처리에서 프레임 드롭이 발생</li>
+                <li><strong>전환 판단:</strong> 기존 터치·이펙트 로직을 유지하면서 좌표 정밀도를 검증할 수 있는 그림판으로 범위를 재설계</li>
+                <li><strong>다음 개선:</strong> SPI DMA와 프레임 버퍼로 CPU 점유를 낮춘 뒤 원래의 과일 베기 게임으로 확장</li>
+              </ul>
+              <div class="deep-note"><strong>검증 항목:</strong> 네 모서리 좌표, 엔코더 색상 전환, BLACK 지우개 크기, SPI 속도 차이에 따른 LCD·터치 안정성을 각각 확인했습니다.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="case-study" aria-labelledby="paint-overview">
+        <div data-reveal><span class="section-index">03 / Overview</span><h2 id="paint-overview">센서 좌표를 자연스러운 그리기 경험으로</h2></div>
+        <div data-reveal>
+          <article class="story-block">
+            <h3>구성</h3>
+            <p>ILI9341 TFT와 XPT2046 터치 컨트롤러를 각각 SPI로 연결했습니다. 화면을 터치하면 보정된 좌표에 브러시를 그리고, 로터리 엔코더를 돌리면 컬러 팔레트와 지우개를 선택합니다.</p>
+            <div class="architecture" aria-label="시스템 흐름"><div>Touch · Encoder<br />User input</div><div>Scale · State<br />STM32F401</div><div>TFT frame<br />ILI9341</div></div>
+          </article>
+          <article class="story-block">
+            <h3>핵심 과제</h3>
+            <p>터치 컨트롤러의 원시 좌표와 LCD의 화면 좌표는 방향과 범위가 달랐습니다. 좌표를 그대로 사용하면 누른 위치와 그려지는 위치가 어긋납니다.</p>
+          </article>
+          <article class="story-block">
+            <h3>해결</h3>
+            <p>원시 좌표를 화면 크기에 맞게 스케일링하고 축 방향을 보정했습니다. 터치 상태와 엔코더 카운터를 분리해 브러시 위치와 색상 선택이 서로 영향을 주지 않게 구성했습니다.</p>
+          </article>
+          <article class="story-block">
+            <h3>배운 점</h3>
+            <p>센서 값을 읽는 것과 사용자가 기대하는 인터랙션을 만드는 일은 다릅니다. 좌표계 변환, 입력 노이즈, 화면 갱신 범위를 함께 고려하는 방법을 익혔습니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <nav class="project-nav" aria-label="다른 프로젝트">
+        <a href="/projects/cipher-machine/"><span>← Previous project</span><strong>04. Cipher Machine</strong></a>
+        <a href="/projects/colored-mnist-classifier/"><span>Next project →</span><strong>06. Colored MNIST</strong></a>
+      </nav>
+    </main>
+
+    <footer class="site-footer"><div class="footer-inner shell"><span>© <span data-year></span> 허준범</span><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
+  </body>
+</html>

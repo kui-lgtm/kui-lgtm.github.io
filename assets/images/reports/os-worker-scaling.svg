@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" role="img" aria-labelledby="title desc">
+  <title id="title">worker 수에 따른 process와 thread speedup</title><desc id="desc">worker 1, 2, 4, 8개에서 process는 최대 5.63배, thread는 최대 5.55배의 speedup을 기록</desc>
+  <rect width="760" height="420" rx="18" fill="#f6faf8"/>
+  <g transform="translate(82 52)" font-family="Arial,sans-serif">
+    <g stroke="#cbdad5" stroke-width="1"><path d="M0 300H600M0 250H600M0 200H600M0 150H600M0 100H600M0 50H600M0 0H600"/><path d="M0 0V300M200 0V300M400 0V300M600 0V300"/></g>
+    <g fill="#667a74" font-size="12"><text x="-20" y="304">0</text><text x="-20" y="254">1</text><text x="-20" y="204">2</text><text x="-20" y="154">3</text><text x="-20" y="104">4</text><text x="-20" y="54">5</text><text x="-20" y="4">6</text><text x="0" y="326" text-anchor="middle">1</text><text x="200" y="326" text-anchor="middle">2</text><text x="400" y="326" text-anchor="middle">4</text><text x="600" y="326" text-anchor="middle">8 workers</text></g>
+    <path d="M0 250L200 202.4L400 120.9L600 22.3" fill="none" stroke="#24a886" stroke-width="5"/><path d="M0 250L200 201.4L400 110.9L600 18.5" fill="none" stroke="#5d75e8" stroke-width="5"/>
+    <g fill="#24a886"><circle cx="0" cy="250" r="6"/><circle cx="200" cy="202.4" r="6"/><circle cx="400" cy="120.9" r="6"/><circle cx="600" cy="22.3" r="6"/></g><g fill="#5d75e8"><circle cx="0" cy="250" r="6"/><circle cx="200" cy="201.4" r="6"/><circle cx="400" cy="110.9" r="6"/><circle cx="600" cy="18.5" r="6"/></g>
+    <g font-size="13" font-weight="700"><text x="430" y="54" fill="#5d75e8">Process · 5.63×</text><text x="430" y="76" fill="#24a886">Thread · 5.55×</text></g>
+    <text x="300" y="360" text-anchor="middle" fill="#354a44" font-size="15" font-weight="700">Worker count vs. speedup</text>
+  </g>
+</svg>

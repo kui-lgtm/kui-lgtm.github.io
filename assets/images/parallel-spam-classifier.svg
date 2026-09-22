@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">병렬 스팸 메일 분류 시스템</title>
+  <desc id="desc">메일 입력을 읽고 BERT 임베딩과 SVM 예측을 수행하는 파이프라인을 여러 process와 thread로 병렬화한 구조</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#071411"/><stop offset="1" stop-color="#10231f"/></linearGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#4b756b" stroke-opacity=".12"/></pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#75f8d2"/></marker>
+  </defs>
+  <rect width="960" height="540" rx="28" fill="url(#bg)"/><rect width="960" height="540" rx="28" fill="url(#grid)"/>
+  <text x="46" y="54" fill="#75f8d2" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="3">PARALLEL SPAM CLASSIFIER / LINUX</text>
+  <text x="46" y="91" fill="#f1f8f5" font-family="Arial,sans-serif" font-size="28" font-weight="700">BERT is the workload. Synchronization is the contract.</text>
+  <g font-family="Arial,sans-serif">
+    <g transform="translate(46 142)" font-size="14" font-weight="700" text-anchor="middle">
+      <g><rect width="140" height="74" rx="14" fill="#173b34" stroke="#3f8171"/><text x="70" y="32" fill="#78ab9f" font-size="10" letter-spacing="1.4">INPUT</text><text x="70" y="54" fill="#eef8f4">Mail files</text></g>
+      <path d="M150 37H188" stroke="#75f8d2" stroke-width="3" marker-end="url(#arrow)"/>
+      <g transform="translate(198)"><rect width="140" height="74" rx="14" fill="#173b34" stroke="#3f8171"/><text x="70" y="32" fill="#78ab9f" font-size="10" letter-spacing="1.4">I/O</text><text x="70" y="54" fill="#eef8f4">Read · Hash</text></g>
+      <path d="M348 37H386" stroke="#75f8d2" stroke-width="3" marker-end="url(#arrow)"/>
+      <g transform="translate(396)"><rect width="140" height="74" rx="14" fill="#173b34" stroke="#3f8171"/><text x="70" y="32" fill="#78ab9f" font-size="10" letter-spacing="1.4">96.34% BASELINE</text><text x="70" y="54" fill="#d5ff75">BERT 384-D</text></g>
+      <path d="M546 37H584" stroke="#75f8d2" stroke-width="3" marker-end="url(#arrow)"/>
+      <g transform="translate(594)"><rect width="140" height="74" rx="14" fill="#173b34" stroke="#3f8171"/><text x="70" y="32" fill="#78ab9f" font-size="10" letter-spacing="1.4">CLASSIFY</text><text x="70" y="54" fill="#eef8f4">SVM predict</text></g>
+      <path d="M744 37H782" stroke="#75f8d2" stroke-width="3" marker-end="url(#arrow)"/>
+      <g transform="translate(792)"><rect width="122" height="74" rx="14" fill="#233c35" stroke="#a8dd64"/><text x="61" y="32" fill="#78ab9f" font-size="10" letter-spacing="1.4">RESULT</text><text x="61" y="54" fill="#d5ff75">spam / ham</text></g>
+    </g>
+    <g transform="translate(46 270)">
+      <rect width="868" height="150" rx="18" fill="#0d211d" stroke="#376a5f"/>
+      <text x="20" y="30" fill="#78ab9f" font-size="12" font-weight="700" letter-spacing="2">8-PROCESS × 1 BERT THREAD</text>
+      <g transform="translate(24 55)" font-size="12" font-weight="700">
+        <g fill="#173b34" stroke="#3f8171"><rect width="86" height="54" rx="10"/><rect x="98" width="86" height="54" rx="10"/><rect x="196" width="86" height="54" rx="10"/><rect x="294" width="86" height="54" rx="10"/><rect x="392" width="86" height="54" rx="10"/><rect x="490" width="86" height="54" rx="10"/><rect x="588" width="86" height="54" rx="10"/><rect x="686" width="86" height="54" rx="10"/></g>
+        <g fill="#eef8f4" text-anchor="middle"><text x="43" y="23">P1</text><text x="43" y="41" fill="#75f8d2">BERT T1</text><text x="141" y="23">P2</text><text x="141" y="41" fill="#75f8d2">BERT T1</text><text x="239" y="23">P3</text><text x="239" y="41" fill="#75f8d2">BERT T1</text><text x="337" y="23">P4</text><text x="337" y="41" fill="#75f8d2">BERT T1</text><text x="435" y="23">P5</text><text x="435" y="41" fill="#75f8d2">BERT T1</text><text x="533" y="23">P6</text><text x="533" y="41" fill="#75f8d2">BERT T1</text><text x="631" y="23">P7</text><text x="631" y="41" fill="#75f8d2">BERT T1</text><text x="729" y="23">P8</text><text x="729" y="41" fill="#75f8d2">BERT T1</text></g>
+      </g>
+      <text x="24" y="132" fill="#78908a" font-size="12">shared index · accepted count · stats</text><text x="830" y="132" text-anchor="end" fill="#d5ff75" font-size="12" font-weight="700">mutex protected</text>
+    </g>
+    <g transform="translate(46 472)"><text fill="#78908a" font-size="12" font-weight="700" letter-spacing="1.2">8 WORKERS</text><text x="100" fill="#d5ff75" font-size="20" font-weight="700">5.63×</text><text x="230" fill="#78908a" font-size="12" font-weight="700" letter-spacing="1.2">BEST TIME</text><text x="330" fill="#eef8f4" font-size="18" font-weight="700">22.48s</text><text x="470" fill="#78908a" font-size="12" font-weight="700" letter-spacing="1.2">SYNC OFF</text><text x="560" fill="#ffb38a" font-size="18" font-weight="700">239 / 200 processed</text></g>
+  </g>
+</svg>

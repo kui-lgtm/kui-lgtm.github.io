@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">서울 교통 혼잡 예측 MLP 구조</title>
+  <desc id="desc">교통량, 날씨, 달력 정보를 22개 특성으로 전처리하고 128, 64, 32 노드의 MLP로 혼잡 여부를 예측하는 흐름</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#071411"/><stop offset="1" stop-color="#10231f"/></linearGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#4b756b" stroke-opacity=".12"/></pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#75f8d2"/></marker>
+  </defs>
+  <rect width="960" height="540" rx="28" fill="url(#bg)"/><rect width="960" height="540" rx="28" fill="url(#grid)"/>
+  <text x="46" y="54" fill="#75f8d2" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="3">SEOUL TRAFFIC / MLP CLASSIFIER</text>
+  <text x="46" y="91" fill="#f1f8f5" font-family="Arial,sans-serif" font-size="28" font-weight="700">2.01M records into one congestion signal.</text>
+  <g font-family="Arial,sans-serif">
+    <g transform="translate(46 140)">
+      <rect width="205" height="250" rx="18" fill="#102a25" stroke="#3f8171"/>
+      <text x="20" y="34" fill="#78ab9f" font-size="12" font-weight="700" letter-spacing="2">INPUT SOURCES</text>
+      <g fill="#e8f6f1" font-size="16" font-weight="700">
+        <rect x="18" y="58" width="169" height="48" rx="9" fill="#173b34"/><text x="34" y="88">Traffic volume</text>
+        <rect x="18" y="118" width="169" height="48" rx="9" fill="#173b34"/><text x="34" y="148">Hourly weather</text>
+        <rect x="18" y="178" width="169" height="48" rx="9" fill="#173b34"/><text x="34" y="208">Calendar context</text>
+      </g>
+    </g>
+    <path d="M270 265H338" stroke="#75f8d2" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(348 168)">
+      <rect width="208" height="194" rx="18" fill="#102a25" stroke="#3f8171"/>
+      <text x="20" y="32" fill="#78ab9f" font-size="12" font-weight="700" letter-spacing="2">FEATURE PIPELINE</text>
+      <text x="20" y="72" fill="#f1f8f5" font-size="18" font-weight="700">22 features</text>
+      <text x="20" y="104" fill="#b9d1cb" font-size="14">StandardScaler</text>
+      <text x="20" y="132" fill="#b9d1cb" font-size="14">OneHotEncoder</text>
+      <text x="20" y="164" fill="#d5ff75" font-size="13" font-weight="700">70th percentile label</text>
+    </g>
+    <path d="M576 265H630" stroke="#75f8d2" stroke-width="3" marker-end="url(#arrow)"/>
+    <g transform="translate(640 140)">
+      <rect width="274" height="250" rx="18" fill="#102a25" stroke="#3f8171"/>
+      <text x="20" y="34" fill="#78ab9f" font-size="12" font-weight="700" letter-spacing="2">MLP 128 → 64 → 32</text>
+      <g fill="#75f8d2">
+        <circle cx="62" cy="90" r="8"/><circle cx="62" cy="125" r="8"/><circle cx="62" cy="160" r="8"/><circle cx="62" cy="195" r="8"/>
+        <circle cx="132" cy="101" r="8"/><circle cx="132" cy="143" r="8"/><circle cx="132" cy="185" r="8"/>
+        <circle cx="196" cy="115" r="8"/><circle cx="196" cy="171" r="8"/>
+      </g>
+      <g stroke="#4b8f80" stroke-width="1.2" opacity=".75"><path d="M70 90L124 101M70 90L124 143M70 125L124 101M70 125L124 143M70 125L124 185M70 160L124 101M70 160L124 143M70 160L124 185M70 195L124 143M70 195L124 185M140 101L188 115M140 101L188 171M140 143L188 115M140 143L188 171M140 185L188 115M140 185L188 171"/></g>
+      <rect x="220" y="110" width="38" height="68" rx="12" fill="#233c35" stroke="#a8dd64"/><text x="239" y="138" text-anchor="middle" fill="#d5ff75" font-size="10" font-weight="700">0</text><text x="239" y="160" text-anchor="middle" fill="#d5ff75" font-size="10" font-weight="700">1</text>
+    </g>
+    <g transform="translate(46 438)">
+      <text fill="#78908a" font-size="12" font-weight="700" letter-spacing="1.2">TEST SET</text>
+      <text x="93" fill="#eef8f4" font-size="15" font-weight="700">403,173</text>
+      <text x="236" fill="#78908a" font-size="12" font-weight="700" letter-spacing="1.2">ACCURACY</text>
+      <text x="332" fill="#d5ff75" font-size="20" font-weight="700">91.35%</text>
+      <text x="476" fill="#78908a" font-size="12" font-weight="700" letter-spacing="1.2">CONGESTION F1</text>
+      <text x="608" fill="#d5ff75" font-size="20" font-weight="700">85.63%</text>
+    </g>
+  </g>
+</svg>

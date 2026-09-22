@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Colored MNIST classification pipeline</title>
+  <desc id="desc">A colored digit is separated into palette colors and a black-and-white mask before an SVC predicts the digit.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#071110"/><stop offset="1" stop-color="#102522"/>
+    </linearGradient>
+    <linearGradient id="tile" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ffd83d"/><stop offset="1" stop-color="#ff9a3d"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="12" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse"><path d="M42 0H0V42" fill="none" stroke="#75f8d2" stroke-opacity=".055"/></pattern>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#grid)"/>
+  <g font-family="Arial, sans-serif">
+    <text x="84" y="96" fill="#75f8d2" font-size="24" font-weight="700" letter-spacing="5">COLORED MNIST / TWO-STAGE INFERENCE</text>
+    <text x="84" y="150" fill="#eef5f4" font-size="46" font-weight="700">Color first. Shape next.</text>
+
+    <g transform="translate(92 228)">
+      <rect width="360" height="360" rx="28" fill="url(#tile)"/>
+      <g fill="#e95067">
+        <rect x="202" y="48" width="48" height="48"/><rect x="154" y="96" width="96" height="48"/>
+        <rect x="106" y="144" width="48" height="48"/><rect x="202" y="144" width="48" height="48"/>
+        <rect x="58" y="192" width="192" height="48"/><rect x="202" y="240" width="48" height="72"/>
+      </g>
+      <text x="0" y="405" fill="#a8bbb8" font-size="22" letter-spacing="2">28 × 28 × 3 RGB INPUT</text>
+    </g>
+
+    <g fill="none" stroke="#75f8d2" stroke-width="4" stroke-linecap="round">
+      <path d="M490 408H620"/><path d="m604 394 16 14-16 14"/>
+      <path d="M998 408h112"/><path d="m1094 394 16 14-16 14"/>
+    </g>
+
+    <g transform="translate(652 248)">
+      <rect width="314" height="130" rx="20" fill="#102d29" stroke="#75f8d2" stroke-opacity=".55"/>
+      <text x="28" y="44" fill="#75f8d2" font-size="18" font-weight="700" letter-spacing="3">01 / PALETTE</text>
+      <text x="28" y="82" fill="#eef5f4" font-size="26" font-weight="700">Nearest color + count</text>
+      <text x="28" y="108" fill="#9fb4b1" font-size="17">FG 100% · BG 100%</text>
+      <rect y="172" width="314" height="130" rx="20" fill="#102d29" stroke="#75f8d2" stroke-opacity=".55"/>
+      <text x="28" y="216" fill="#75f8d2" font-size="18" font-weight="700" letter-spacing="3">02 / MASK</text>
+      <text x="28" y="254" fill="#eef5f4" font-size="26" font-weight="700">RGB → 784-dim BW</text>
+      <text x="28" y="280" fill="#9fb4b1" font-size="17">Noise reduced before SVC</text>
+    </g>
+
+    <g transform="translate(1148 248)">
+      <rect width="360" height="302" rx="26" fill="#0a1715" stroke="#d5ff75" stroke-opacity=".7"/>
+      <text x="32" y="48" fill="#d5ff75" font-size="18" font-weight="700" letter-spacing="3">OVO SVC / 45 CLASSIFIERS</text>
+      <text x="32" y="120" fill="#eef5f4" font-size="84" font-weight="700">98.82%</text>
+      <text x="32" y="158" fill="#a8bbb8" font-size="22">final validation accuracy</text>
+      <path d="M34 236h34l32-44 32 17 32-54 32 24 34-76 34 20 34-55" fill="none" stroke="#75f8d2" stroke-width="5" filter="url(#glow)"/>
+      <circle cx="298" cy="68" r="7" fill="#d5ff75"/>
+    </g>
+
+    <g transform="translate(84 720)">
+      <text fill="#79908d" font-size="18" letter-spacing="2">BASE COLORED</text><text y="40" fill="#eef5f4" font-size="30" font-weight="700">82.79%</text>
+      <path d="M220 18H320" stroke="#2b4642" stroke-width="2"/>
+      <text x="350" fill="#79908d" font-size="18" letter-spacing="2">BW PREPROCESS</text><text x="350" y="40" fill="#eef5f4" font-size="30" font-weight="700">98.08%</text>
+      <path d="M620 18H720" stroke="#2b4642" stroke-width="2"/>
+      <text x="750" fill="#79908d" font-size="18" letter-spacing="2">AUGMENTATION</text><text x="750" y="40" fill="#eef5f4" font-size="30" font-weight="700">98.46%</text>
+      <path d="M1020 18H1120" stroke="#2b4642" stroke-width="2"/>
+      <text x="1150" fill="#d5ff75" font-size="18" letter-spacing="2">GRID SEARCH</text><text x="1150" y="40" fill="#d5ff75" font-size="30" font-weight="700">98.82%</text>
+    </g>
+  </g>
+</svg>

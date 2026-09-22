@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="BERT와 SVM 기반 스팸 메일 분류기를 process와 thread로 병렬화하고 동기화 정확성을 검증한 운영체제 프로젝트" />
+    <meta name="theme-color" content="#071110" />
+    <title>Parallel Spam Classifier — 허준범 Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23071110'/%3E%3Cpath d='M17 32h10m10 0h10M32 17v10m0 10v10' stroke='%2375f8d2' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23d5ff75'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header"><nav class="nav shell" aria-label="주요 메뉴"><a class="brand" href="/"><span class="brand-mark">HJ</span><span>허준범 / Portfolio</span></a><ul class="nav-links"><li><a href="/projects/" aria-current="page">Projects</a></li><li><a href="/#about">About</a></li><li><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></li></ul></nav></header>
+    <main id="main" class="shell">
+      <header class="project-hero">
+        <div data-reveal><nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>02</span></nav><h1>Parallel Spam Classifier</h1><p class="lead">메일 읽기, BERT 384차원 embedding, SVM 예측으로 이어지는 CPU-bound 분류기를 process와 thread로 병렬화하고, 공유 자원의 동기화가 성능과 정확성에 미치는 영향을 실험했습니다.</p></div>
+        <dl class="project-meta" data-reveal>
+          <div><dt>Course</dt><dd>운영체제</dd></div><div><dt>Period</dt><dd>2026년 1학기</dd></div><div><dt>Type</dt><dd>Team project · 5 members</dd></div><div><dt>Role</dt><dd>Thread · Synchronization · 실험 분석</dd></div><div><dt>Stack</dt><dd>C/C++ · pthread · mmap · Linux</dd></div><div><dt>Pipeline</dt><dd>BERT embedding · LIBSVM</dd></div><div><dt>Result</dt><dd>8 workers · 5.63× speedup</dd></div>
+        </dl>
+      </header>
+      <figure class="project-media project-media-dark" data-reveal><img src="/assets/images/parallel-spam-classifier.svg" alt="메일 읽기, BERT embedding, SVM 예측을 8개 process와 BERT thread로 처리하는 병렬 분류 구조" /></figure>
+      <section class="project-snapshot" aria-label="Parallel Spam Classifier 핵심 지표">
+        <article data-reveal><span>Bottleneck</span><strong>96.34%</strong><small>BERT embedding 비중</small></article><article data-reveal><span>Best scaling</span><strong>5.63×</strong><small>8 process workers</small></article><article data-reveal><span>Throughput</span><strong>44.49/s</strong><small>1,000 emails</small></article><article data-reveal><span>Race result</span><strong>239 / 200</strong><small>sync off 처리 초과</small></article>
+      </section>
+      <nav class="page-toc" aria-label="Parallel Spam Classifier 페이지 목차" data-reveal><span>On this page</span><a href="#os-analysis"><b>01</b> Verification</a><a href="#os-deep"><b>02</b> Deep dive</a><a href="#os-overview"><b>03</b> Retrospective</a></nav>
+      <section class="report-showcase" aria-labelledby="os-analysis">
+        <div class="report-heading" data-reveal><div><span class="section-index">Parallelism / Integrity</span><h2 id="os-analysis">빠르게 처리하고, 같은 결과를 보장하기</h2></div><p>worker 확장에 따른 성능 변화와 동기화 해제 시 발생하는 오류를 함께 비교해 처리량과 정확성 사이의 경계를 확인했습니다.</p></div>
+        <div class="evidence-list">
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual"><img src="/assets/images/reports/os-worker-scaling.svg" alt="worker 1, 2, 4, 8개에 따른 process와 thread speedup 그래프" /><figcaption>worker 8개에서 process 5.63× · thread 5.55× speedup</figcaption></figure>
+            <div class="evidence-copy"><span class="evidence-kicker">01 / Scaling</span><h3>worker를 늘리면 빨라지지만 선형으로 늘지는 않는다</h3><p>1,000개 메일을 chunk 1로 처리했을 때 process 8개는 22.477초, thread 8개는 22.552초를 기록했습니다. 두 방식은 거의 같은 성능을 보였지만 8배가 아닌 약 5.6배에서 포화됐습니다.</p><ul class="detail-points"><li><strong>CPU 경쟁:</strong> BERT feature extraction이 모든 core와 cache를 강하게 사용</li><li><strong>Memory pressure:</strong> 여러 worker가 동시에 모델 데이터를 읽으며 대역폭 경쟁</li><li><strong>Synchronization:</strong> index 예약과 통계 병합을 위한 짧은 critical section 발생</li></ul></div>
+          </article>
+          <article class="evidence-item" data-reveal>
+            <figure class="evidence-visual"><img src="/assets/images/reports/os-sync-integrity.svg" alt="동기화 적용 시 200개, 미적용 시 239개가 처리된 비교" /><figcaption>limit 200에서 동기화를 끄면 39개가 초과 처리됨</figcaption></figure>
+            <div class="evidence-copy"><span class="evidence-kicker">02 / Race condition</span><h3>더 빨라 보이는 실행이 정답을 깨뜨렸다</h3><p>8 process × 1 BERT thread 조건에서 race delay 1,000μs를 넣자, synchronization on은 정확히 200개를 처리했지만 off는 239개를 처리했습니다. 같은 index와 count를 여러 process가 동시에 읽은 결과입니다.</p><div class="deep-note"><strong>판단:</strong> lock overhead가 작아도 작업 예약, accepted count, 통계 병합은 반드시 원자적으로 보호해야 합니다.</div></div>
+          </article>
+          <article class="evidence-item" data-reveal>
+            <figure class="evidence-visual"><img src="/assets/images/parallel-spam-classifier.svg" alt="메일 입력부터 BERT와 SVM 예측까지의 병렬 처리 구조" /><figcaption>메일 I/O와 embedding, 예측, 집계를 분리한 전체 처리 흐름</figcaption></figure>
+            <div class="evidence-copy"><span class="evidence-kicker">03 / Hybrid design</span><h3>process와 thread의 역할을 작업 성격에 맞춰 분리</h3><p>parent는 파일 목록과 공유 index를 준비하고 child process는 I/O·count·SVM을 담당합니다. 각 process 안의 pthread는 BERT embedding에만 집중하며 mutex와 condition variable을 통해 job과 feature를 전달합니다.</p><ol class="process-list"><li><strong>Parent</strong>파일 목록, SVM 모델, shared global index 준비</li><li><strong>Child process</strong>파일 예약, 읽기, 처리 개수 제한, SVM 예측</li><li><strong>BERT thread</strong>메일 버퍼를 384차원 feature로 변환</li><li><strong>Protected merge</strong>mutex로 전역 통계를 일관되게 합산</li></ol></div>
+          </article>
+        </div>
+      </section>
+      <section class="deep-dive" aria-labelledby="os-deep">
+        <header class="deep-heading" data-reveal><div><span class="section-index">Engineering deep dive</span><h2 id="os-deep">병목을 측정한 뒤 병렬화 구조를 선택</h2></div><p>process가 무겁고 thread가 가볍다는 일반론 대신, 실제 단계별 시간과 메모리 동작을 기준으로 구조를 비교했습니다.</p></header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal><div class="deep-card-title"><span>01 / Baseline</span><h3>전체 시간의 96.34%가 BERT embedding</h3></div><div class="deep-card-body"><p>single process가 메일을 순차적으로 읽고 384차원 embedding을 만든 뒤 SVM으로 분류했습니다. 3,000개 메일 기준 99.136초 중 embedding이 95.508초를 차지해, I/O가 아니라 CPU 연산을 병렬화해야 한다는 결론을 얻었습니다.</p><div class="table-wrap"><table class="tech-table"><thead><tr><th>Stage</th><th>Time</th><th>Share</th></tr></thead><tbody><tr><td>Read / parsing / hashing</td><td>0.178s</td><td>0.18%</td></tr><tr><td>BERT embedding</td><td>95.508s</td><td>96.34%</td></tr><tr><td>SVM prediction</td><td>2.741s</td><td>2.76%</td></tr><tr><td>Others</td><td>0.710s</td><td>0.72%</td></tr></tbody></table></div></div></article>
+          <article class="deep-card" data-reveal><div class="deep-card-title"><span>02 / Structure comparison</span><h3>pipeline보다 work sharing이 더 적합했다</h3></div><div class="deep-card-body"><p>단일 worker 비교에서는 thread-workshare가 67.883초로 가장 빨랐고 process-workshare가 67.994초로 뒤를 이었습니다. 중간 feature를 queue로 넘기는 pipeline보다 worker가 파일 하나의 전체 분류를 끝내는 방식이 동기화와 전달 비용을 줄였습니다.</p><div class="table-wrap"><table class="tech-table"><thead><tr><th>Mode</th><th>Total time</th><th>Throughput</th></tr></thead><tbody><tr><td>thread-workshare</td><td>67.883s</td><td>14.73 emails/s</td></tr><tr><td>process-workshare</td><td>67.994s</td><td>14.71 emails/s</td></tr><tr><td>thread-pipeline</td><td>68.189s</td><td>14.67 emails/s</td></tr><tr><td>process-pipeline</td><td>69.047s</td><td>14.48 emails/s</td></tr></tbody></table></div><div class="deep-note"><strong>핵심:</strong> process와 thread 자체의 차이보다 workload를 queue로 나누는 방법이 성능에 더 큰 영향을 줬습니다.</div></div></article>
+          <article class="deep-card" data-reveal><div class="deep-card-title"><span>03 / Hybrid</span><h3>총 BERT worker가 같아도 배치가 성능을 바꾼다</h3></div><div class="deep-card-body"><p>총 8개의 BERT worker를 유지한 채 process와 thread 조합을 바꿨습니다. 8 process × 1 thread는 22.906초였지만 1 process × 8 threads는 132.613초였습니다. queue capacity 1에서 단일 process가 I/O와 SVM을 맡으면 handoff가 직렬화되기 때문입니다.</p><div class="table-wrap"><table class="tech-table"><thead><tr><th>Processes × threads</th><th>Total time</th><th>Wall throughput</th></tr></thead><tbody><tr><td>8 × 1</td><td>22.906s</td><td>43.66/s</td></tr><tr><td>4 × 2</td><td>36.168s</td><td>27.65/s</td></tr><tr><td>2 × 4</td><td>68.899s</td><td>14.51/s</td></tr><tr><td>1 × 8</td><td>132.613s</td><td>7.54/s</td></tr></tbody></table></div></div></article>
+          <article class="deep-card" data-reveal><div class="deep-card-title"><span>04 / Synchronization</span><h3>보호해야 할 데이터의 경계를 명확히</h3></div><div class="deep-card-body"><p>동기화 대상을 global index, accepted count, stats, BERT job/result queue, start barrier로 나눴습니다. queue는 mutex와 condition variable로 보호하고, process-shared 데이터는 별도 mutex 안에서 검사와 갱신이 함께 일어나도록 했습니다.</p><pre class="code-sample" aria-label="동기화 대상 구조"><code>lock(global_mutex)<br />  reserve next_index<br />  check_and_increment accepted_emails<br />unlock(global_mutex)<br /><br />lock(stats_mutex)<br />  merge local_stats into global_stats<br />unlock(stats_mutex)</code></pre><div class="deep-note"><strong>실험 해석:</strong> mutex·spinlock·adaptive mutex·POSIX semaphore의 실행 차이는 1% 미만이었습니다. 이 workload에서는 lock 종류보다 critical section의 정확한 범위가 더 중요했습니다.</div></div></article>
+        </div>
+      </section>
+      <section class="case-study" aria-labelledby="os-overview">
+        <div data-reveal><span class="section-index">03 / Retrospective</span><h2 id="os-overview">가벼운 thread가 항상 빠르지는 않았다</h2></div>
+        <div data-reveal>
+          <article class="story-block"><h3>담당 범위</h3><p>5인 팀에서 Thread & Synchronization 파트를 맡아 thread 기반 병렬화 모델을 구현하고 mutex·spinlock 등 동기화 도구를 비교했습니다. 공식 역할 기여도는 20%였습니다.</p></article>
+          <article class="story-block"><h3>핵심 발견</h3><p>read-only BERT 모델은 fork 이후 Copy-on-Write로 효율적으로 공유됐고, thread 방식은 context migration과 모델 인스턴스 복제의 영향을 받았습니다. 실제 workload에서는 process가 thread와 같거나 조금 더 빨랐습니다.</p></article>
+          <article class="story-block"><h3>결과</h3><dl class="metric-grid" aria-label="운영체제 프로젝트 핵심 성과"><div><dt>Baseline</dt><dd><strong>96.34%</strong><small>embedding 병목</small></dd></div><div><dt>8 workers</dt><dd><strong>5.63×</strong><small>process speedup</small></dd></div><div><dt>Race test</dt><dd><strong>+39</strong><small>sync off 초과 처리</small></dd></div></dl></article>
+          <article class="story-block"><h3>배운 점</h3><p>병렬화 방식은 자료구조 이름이나 일반적인 인상으로 고를 수 없었습니다. 단계별 비중, 데이터 공유 방식, cache와 memory bandwidth, 결과 일관성을 함께 측정해야 설계를 설명할 수 있었습니다.</p></article>
+        </div>
+      </section>
+      <nav class="project-nav" aria-label="다른 프로젝트"><a href="/projects/seoul-traffic-mlp/"><span>← Previous project</span><strong>01. Seoul Traffic MLP</strong></a><a href="/projects/dino-jump/"><span>Next project →</span><strong>03. Dino Jump</strong></a></nav>
+    </main>
+    <footer class="site-footer"><div class="footer-inner shell"><span>© <span data-year></span> 허준범</span><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
+  </body>
+</html>

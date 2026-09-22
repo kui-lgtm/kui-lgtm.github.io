@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="ARM 어셈블리 기반 이미지 처리 및 메모리 최적화 프로젝트" />
+    <meta name="theme-color" content="#071110" />
+    <title>ARM Image Optimization — 허준범 Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23071110'/%3E%3Cpath d='M17 32h10m10 0h10M32 17v10m0 10v10' stroke='%2375f8d2' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23d5ff75'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="주요 메뉴">
+        <a class="brand" href="/"><span class="brand-mark">HJ</span><span>허준범 / Portfolio</span></a>
+        <ul class="nav-links">
+          <li><a href="/projects/" aria-current="page">Projects</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="project-hero">
+        <div data-reveal>
+          <nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>08</span></nav>
+          <h1>ARM Image Optimization</h1>
+          <p class="lead">RGBA 이미지 처리 함수를 C와 ARM 어셈블리로 구현하고, 메모리 배치와 명령어 수준의 최적화가 실행 시간에 미치는 영향을 측정했습니다.</p>
+        </div>
+        <dl class="project-meta" data-reveal>
+          <div><dt>Course</dt><dd>마이크로프로세서응용</dd></div>
+          <div><dt>Period</dt><dd>2025년 1학기</dd></div>
+          <div><dt>Type</dt><dd>Team project</dd></div>
+          <div><dt>Role</dt><dd>C·ARM 함수 구현 · 디버깅 · 최적화</dd></div>
+          <div><dt>Environment</dt><dd>Keil MDK / ARM</dd></div>
+          <div><dt>Domain</dt><dd>RGBA Image Processing</dd></div>
+          <div><dt>Result</dt><dd>최대 7.51× 속도 향상</dd></div>
+        </dl>
+      </header>
+
+      <figure class="project-media" data-reveal>
+        <img src="/assets/images/arm-image-optimization.jpg" alt="RGBA 원본 이미지가 색상 반전 및 그레이스케일 이미지로 변환되는 흐름" />
+      </figure>
+
+      <section class="project-snapshot" aria-label="ARM Image Optimization 핵심 사양">
+        <article data-reveal><span>Sample size</span><strong>9,600 px</strong><small>32-bit RGBA input</small></article>
+        <article data-reveal><span>Data layout</span><strong>RGBA → R/G/B</strong><small>채널별 연속 메모리 재배치</small></article>
+        <article data-reveal><span>Batch processing</span><strong>16 / 8 px</strong><small>Count·invert / grayscale</small></article>
+        <article data-reveal><span>Best result</span><strong>7.51×</strong><small>Image negative · 4.416 → 0.588 ms</small></article>
+      </section>
+
+      <nav class="page-toc" aria-label="ARM Image Optimization 페이지 목차" data-reveal>
+        <span>On this page</span>
+        <a href="#arm-report"><b>01</b> Performance</a>
+        <a href="#arm-deep"><b>02</b> Deep dive</a>
+        <a href="#arm-overview"><b>03</b> Retrospective</a>
+      </nav>
+
+      <section class="report-showcase" aria-labelledby="arm-report">
+        <div class="report-heading" data-reveal>
+          <div><span class="section-index">Pipeline / Performance</span><h2 id="arm-report">처리 흐름과 성능을 함께 검증</h2></div>
+          <p>이미지 데이터의 메모리 재배치부터 각 처리 함수의 결과와 실행 시간까지, 흐름도와 측정값을 한눈에 볼 수 있도록 정리했습니다.</p>
+        </div>
+        <div class="report-grid">
+          <figure class="report-figure report-figure-wide" data-reveal>
+            <img src="/assets/images/reports/arm-processing-flow.png" alt="이미지 데이터 재배치와 세 가지 처리 함수의 실행 흐름도" />
+            <figcaption>메모리 재배치 후 Red pixel count, Image negative, Grayscale 함수를 실행하고 결과를 검증하는 전체 흐름입니다.</figcaption>
+          </figure>
+          <figure class="report-figure report-figure-wide" data-reveal>
+            <img src="/assets/images/reports/arm-performance-chart.png" alt="ARM 이미지 처리 함수 최적화 전후 실행 시간 비교 차트" />
+            <figcaption>데이터 재배치와 다중 레지스터 연산 적용 전후를 비교해 최대 7.51×의 속도 향상을 확인했습니다.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="deep-dive" aria-labelledby="arm-deep">
+        <header class="deep-heading" data-reveal>
+          <div><span class="section-index">Engineering deep dive</span><h2 id="arm-deep">데이터 구조부터 바꾼 최적화</h2></div>
+          <p>픽셀마다 RGBA를 건너뛰는 구조를 채널별 연속 배열로 바꾸고, ARM의 다중 로드·저장과 비트 연산으로 루프 비용을 줄였습니다.</p>
+        </header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>01 / Memory map</span><h3>입력과 결과 영역을 명시적으로 분리</h3></div>
+            <div class="deep-card-body">
+              <p>HEX 이미지의 IDAT 시그니처를 찾아 실제 데이터 시작 주소를 얻고, 처리 단계마다 고정된 출력 영역을 사용했습니다. 입력 이미지가 위치한 0x40000000 영역과 런타임 R/W 영역을 분리해 초기화 과정의 충돌을 피했습니다.</p>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Address</th><th>Data</th><th>Role</th></tr></thead>
+                  <tbody>
+                    <tr><td>0x40000000</td><td>Image HEX / IDAT</td><td><code>find_idat_offset</code>이 PNG 데이터 시작점을 검색</td></tr>
+                    <tr><td>0x30000000</td><td>Red count</td><td>R ≥ 128인 픽셀 개수를 32-bit 값으로 저장</td></tr>
+                    <tr><td>0x30010000</td><td>Negative RGB</td><td>24-bit 색상 반전 결과 버퍼</td></tr>
+                    <tr><td>0x30040000</td><td>Relocated R/G/B</td><td>R, G, B 채널을 각각 9,600바이트 연속 영역에 배치</td></tr>
+                    <tr><td>0x30050000</td><td>Grayscale</td><td>픽셀당 16-bit 가중합 결과 저장</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <pre class="code-sample" aria-label="ARM 이미지 처리 메인 흐름"><code>image_data = find_idat_offset((uint8_t*)0x40000000);
+memory_relocation(image_data, (uint8_t*)0x30040000, 9600);
+
+count_red_pixels_re(relocated_data, 9600);
+invert_image_re(relocated_data, out_data, 9600);
+convert_to_grayscale_re(relocated_data, gray_image, 9600);</code></pre>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>02 / Assembly</span><h3>함수별 병목에 맞춘 명령어 선택</h3></div>
+            <div class="deep-card-body">
+              <p>모든 함수에 같은 최적화를 적용하지 않았습니다. 비교·반전·가중합이라는 서로 다른 연산 특성에 맞춰 처리 묶음과 레지스터 사용 방식을 달리했습니다.</p>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Function</th><th>Batch</th><th>Key instructions</th><th>Optimization</th></tr></thead>
+                  <tbody>
+                    <tr><td>Red pixel count</td><td>16 px / loop</td><td><code>LDMIA</code> · <code>AND</code> · <code>LSR</code> · <code>ADDGE</code></td><td>4개 레지스터에 16바이트를 로드하고 분기 없이 조건부 누적</td></tr>
+                    <tr><td>Image negative</td><td>16 B / channel</td><td><code>LDMIA</code> · <code>MVN</code> · <code>STMIA</code></td><td>R/G/B 각 채널을 레지스터 단위로 반전하고 한 번에 저장</td></tr>
+                    <tr><td>Grayscale</td><td>8 px / loop</td><td><code>ADD</code> · <code>LSL</code> · <code>STRH</code></td><td><code>MUL</code> 대신 시프트·덧셈으로 3R + 6G + B 계산</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="deep-note"><strong>핵심 차이:</strong> 기존 RGBA 배열은 다음 R값을 읽을 때마다 Alpha를 포함한 4바이트 간격을 건너뜁니다. 재배치 후에는 채널 데이터가 연속이므로 다중 레지스터 명령이 효율적으로 작동합니다.</div>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>03 / Verification</span><h3>속도와 결과를 함께 확인</h3></div>
+            <div class="deep-card-body">
+              <p>최적화 전후의 출력 메모리를 비교해 Red count, negative image, grayscale이 동일한지 먼저 확인한 뒤 실행 시간을 측정했습니다. 결과가 다른 빠른 코드는 성능 개선으로 인정하지 않았습니다.</p>
+              <ul class="detail-points">
+                <li><strong>Red count:</strong> 2.401 ms → 0.840 ms, 약 2.86× 향상</li>
+                <li><strong>Image negative:</strong> 4.416 ms → 0.588 ms, 약 7.51× 향상</li>
+                <li><strong>Grayscale:</strong> 4.224 ms → 2.737 ms, 약 1.54× 향상</li>
+                <li><strong>측정 범위:</strong> 함수별 프로젝트를 분리하고 종료 직전 정지점을 사용해 초기화·종료 루틴의 시간을 제외</li>
+                <li><strong>문제 해결:</strong> 시작 전 0 초기화가 HEX 데이터를 덮는 문제를 R/W 영역을 0x30000000대로 옮겨 해결</li>
+              </ul>
+              <div class="deep-note"><strong>관찰:</strong> 단순 비트 반전은 <code>MVN</code>과 16바이트 다중 전송의 효과가 커 7.51×까지 개선됐지만, grayscale은 채널 결합과 16-bit 저장 연산이 남아 상대적으로 개선 폭이 작았습니다.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="case-study" aria-labelledby="arm-overview">
+        <div data-reveal><span class="section-index">06 / Overview</span><h2 id="arm-overview">데이터 배치부터 명령어까지 최적화하기</h2></div>
+        <div data-reveal>
+          <article class="story-block">
+            <h3>프로젝트 범위</h3>
+            <p>32-bit RGBA 데이터에서 Red 값이 128 이상인 픽셀을 세고, 24-bit RGB 네거티브 이미지와 16-bit 그레이스케일 이미지를 생성했습니다. 동일한 기능을 C와 ARM 어셈블리로 각각 구현해 결과와 실행 시간을 비교했습니다.</p>
+            <div class="architecture" aria-label="이미지 처리 흐름"><div>RGBA input<br />IDAT data</div><div>Relocate · Process<br />C / ARM</div><div>Count · Invert<br />Grayscale</div></div>
+          </article>
+          <article class="story-block">
+            <h3>담당 구현</h3>
+            <p><code>main.c</code>와 Red pixel count, Image Negative, Grayscale, Memory relocation의 C·ARM 코드를 작성했습니다. 재배치 이후의 함수와 추가 최적화 버전까지 구현하고, 메모리 맵과 결과 데이터를 확인하며 디버깅했습니다.</p>
+          </article>
+          <article class="story-block">
+            <h3>최적화 전략</h3>
+            <p>픽셀마다 RGBA 4바이트를 순회하던 구조에서 Alpha를 제외하고 R·G·B 채널을 연속 영역으로 재배치했습니다. 이후 <code>LDMIA</code>와 <code>STMIA</code>로 여러 바이트를 한 번에 처리하고, <code>MVN</code>과 시프트·덧셈을 활용해 반복 횟수와 연산 비용을 줄였습니다.</p>
+          </article>
+          <article class="story-block">
+            <h3>측정 결과</h3>
+            <dl class="metric-grid" aria-label="ARM 기준 최적화 전후 실행 시간">
+              <div><dt>Red pixel count</dt><dd><strong>0.840 ms</strong><small>2.401 ms 기준 · 2.86×</small></dd></div>
+              <div><dt>Image negative</dt><dd><strong>0.588 ms</strong><small>4.416 ms 기준 · 7.51×</small></dd></div>
+              <div><dt>Grayscale</dt><dd><strong>2.737 ms</strong><small>4.224 ms 기준 · 1.54×</small></dd></div>
+            </dl>
+          </article>
+          <article class="story-block">
+            <h3>문제 해결</h3>
+            <p>HEX 데이터가 초기화 구간과 충돌하던 문제는 입력 영역과 R/W 메모리 맵을 분리해 해결했습니다. 함수별 성능 측정을 위해 코드를 모듈화하고 종료 지점 직전에 정지점을 배치해 측정 범위를 명확히 했습니다.</p>
+          </article>
+          <article class="story-block">
+            <h3>배운 점</h3>
+            <p>알고리즘이 같아도 데이터의 메모리 배치와 명령어 선택에 따라 실행 시간이 크게 달라질 수 있음을 확인했습니다. 최적화는 속도만 줄이는 작업이 아니라, 동일한 출력의 검증과 측정 조건의 통제가 함께 필요한 과정이었습니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <nav class="project-nav" aria-label="다른 프로젝트">
+        <a href="/projects/reconfigurable-fir-filter/"><span>← Previous project</span><strong>07. Reconfigurable FIR</strong></a>
+        <a href="/projects/"><span>All projects →</span><strong>프로젝트 목록</strong></a>
+      </nav>
+    </main>
+
+    <footer class="site-footer"><div class="footer-inner shell"><span>© <span data-year></span> 허준범</span><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
+  </body>
+</html>

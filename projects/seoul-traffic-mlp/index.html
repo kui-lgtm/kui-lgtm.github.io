@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="서울 교통량·날씨·달력 정보를 결합해 시간대별 혼잡을 분류한 MLP 프로젝트" />
+    <meta name="theme-color" content="#071110" />
+    <title>Seoul Traffic MLP — 허준범 Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23071110'/%3E%3Cpath d='M17 32h10m10 0h10M32 17v10m0 10v10' stroke='%2375f8d2' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23d5ff75'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="주요 메뉴">
+        <a class="brand" href="/"><span class="brand-mark">HJ</span><span>허준범 / Portfolio</span></a>
+        <ul class="nav-links"><li><a href="/projects/" aria-current="page">Projects</a></li><li><a href="/#about">About</a></li><li><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></li></ul>
+      </nav>
+    </header>
+    <main id="main" class="shell">
+      <header class="project-hero">
+        <div data-reveal>
+          <nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>01</span></nav>
+          <h1>Seoul Traffic MLP</h1>
+          <p class="lead">서울시 1년 교통량에 시간대별 날씨와 공휴일 맥락을 결합하고, 지점·방향별 기준을 학습해 강서구와 노량진 사이의 혼잡 가능성을 예측했습니다.</p>
+        </div>
+        <dl class="project-meta" data-reveal>
+          <div><dt>Course</dt><dd>인공신경망</dd></div>
+          <div><dt>Period</dt><dd>2026년 1학기</dd></div>
+          <div><dt>Type</dt><dd>Individual final project</dd></div>
+          <div><dt>Role</dt><dd>데이터 결합 · 모델 설계 · 예측 프로그램</dd></div>
+          <div><dt>Stack</dt><dd>Python · pandas · scikit-learn</dd></div>
+          <div><dt>Model</dt><dd>MLP 128 → 64 → 32</dd></div>
+          <div><dt>Result</dt><dd>Accuracy 91.35% · F1 85.63%</dd></div>
+        </dl>
+      </header>
+      <figure class="project-media project-media-dark" data-reveal><img src="/assets/images/seoul-traffic-mlp.svg" alt="교통량, 날씨, 달력 정보를 22개 특성으로 변환해 3층 MLP로 혼잡 여부를 예측하는 구조" /></figure>
+      <section class="project-snapshot" aria-label="Seoul Traffic MLP 핵심 지표">
+        <article data-reveal><span>Dataset</span><strong>2,015,862</strong><small>2025년 시간대별 관측</small></article>
+        <article data-reveal><span>Features</span><strong>22</strong><small>수치형 14 · 범주형 8</small></article>
+        <article data-reveal><span>Test set</span><strong>403,173</strong><small>stratified 20%</small></article>
+        <article data-reveal><span>Accuracy</span><strong>91.35%</strong><small>혼잡 F1 85.63%</small></article>
+      </section>
+      <nav class="page-toc" aria-label="Seoul Traffic MLP 페이지 목차" data-reveal>
+        <span>On this page</span><a href="#traffic-analysis"><b>01</b> Analysis</a><a href="#traffic-deep"><b>02</b> Deep dive</a><a href="#traffic-overview"><b>03</b> Retrospective</a>
+      </nav>
+      <section class="report-showcase" aria-labelledby="traffic-analysis">
+        <div class="report-heading" data-reveal>
+          <div><span class="section-index">Data / Evaluation</span><h2 id="traffic-analysis">데이터에서 혼잡 판단까지</h2></div>
+          <p>데이터 범위, 라벨 불균형, 오분류 구조를 차례로 확인해 모델의 점수뿐 아니라 실제로 어떤 상황을 구분하는지 살폈습니다.</p>
+        </div>
+        <div class="evidence-list">
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual"><img src="/assets/images/reports/traffic-monthly-rows.png" alt="2025년 1월부터 12월까지 월별 학습 데이터 행 수" /><figcaption>12개월 전 구간에 걸쳐 월별 15만~18만 건을 확보</figcaption></figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">01 / Coverage</span><h3>계절을 한 번 모두 통과한 201만 건</h3>
+              <p>서울시 138개 지점의 2025년 교통량과 Open-Meteo 시간별 날씨를 결합했습니다. 월별 데이터가 한쪽 계절에 치우치지 않아 온도·강수·공휴일 변화가 함께 들어갑니다.</p>
+              <ul class="detail-points"><li><strong>시간 범위:</strong> 2025년 1월–12월, 총 2,015,862행</li><li><strong>공간 범위:</strong> 138개 측정 지점과 유입·유출 방향</li><li><strong>맥락 정보:</strong> 기온, 비·눈, 운량, 요일, 주말, 명절 전후와 연휴 여부</li></ul>
+            </div>
+          </article>
+          <article class="evidence-item" data-reveal>
+            <figure class="evidence-visual"><img src="/assets/images/reports/traffic-class-balance.png" alt="원활 69.9퍼센트와 혼잡 30.1퍼센트의 라벨 분포" /><figcaption>원활 69.9% · 혼잡 30.1%의 학습 라벨 구성</figcaption></figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">02 / Target design</span><h3>도로마다 다른 혼잡 기준을 만들었다</h3>
+              <p>모든 도로에 하나의 절대 교통량 기준을 쓰지 않고, 측정 지점과 방향별 교통량의 70퍼센타일을 임계값으로 삼았습니다. 평소 통행량이 다른 도로도 자신의 패턴 안에서 혼잡을 정의할 수 있습니다.</p>
+              <div class="deep-note"><strong>평가 기준:</strong> 7:3 불균형이 있으므로 accuracy와 함께 혼잡 클래스 precision·recall·F1을 확인했습니다.</div>
+            </div>
+          </article>
+          <article class="evidence-item" data-reveal>
+            <figure class="evidence-visual"><img src="/assets/images/reports/traffic-confusion-matrix.png" alt="원활과 혼잡 예측 결과의 혼동행렬" /><figcaption>403,173개 테스트 샘플의 원활·혼잡 예측 결과</figcaption></figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">03 / Error structure</span><h3>혼잡 103,992건을 정확히 찾았다</h3>
+              <p>실제 혼잡 121,190건 중 103,992건을 맞혔고 17,198건을 놓쳤습니다. 원활 구간을 혼잡으로 판단한 경우는 17,692건으로, 두 방향 오류가 비슷한 크기를 보였습니다.</p>
+              <div class="evidence-metrics" aria-label="분류 성능"><div><span>Congestion precision</span><strong>85.46%</strong><small>false alarm 제어</small></div><div><span>Congestion recall</span><strong>85.81%</strong><small>혼잡 탐지율</small></div><div><span>Congestion F1</span><strong>85.63%</strong><small>균형 지표</small></div></div>
+            </div>
+          </article>
+        </div>
+      </section>
+      <section class="deep-dive" aria-labelledby="traffic-deep">
+        <header class="deep-heading" data-reveal><div><span class="section-index">Engineering deep dive</span><h2 id="traffic-deep">시계열 맥락을 분류 입력으로 바꾸기</h2></div><p>날짜와 위치만 넣는 모델에서 끝내지 않고, 지역별 임계값과 한국 공휴일 문맥을 명시적인 feature로 설계했습니다.</p></header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>01 / Feature engineering</span><h3>수치형 14개와 범주형 8개를 한 파이프라인으로</h3></div>
+            <div class="deep-card-body"><p>기온·강수·시간·요일·명절 전후는 StandardScaler로 정규화하고, 지점·방향·구간·날씨 설명·공휴일 이름은 OneHotEncoder로 변환했습니다. 학습과 추론이 같은 컬럼 순서를 사용하도록 Pipeline에 전처리와 모델을 묶었습니다.</p><div class="architecture" aria-label="교통 혼잡 예측 흐름"><div>Traffic + Weather<br />2.01M rows</div><div>Scale + One-hot<br />22 features</div><div>MLPClassifier<br />Congested 0 / 1</div></div><pre class="code-sample" aria-label="MLP 핵심 설정"><code>MLPClassifier(<br />    hidden_layer_sizes=(128, 64, 32),<br />    early_stopping=True,<br />    max_iter=100,<br />    random_state=42,<br />)</code></pre></div>
+          </article>
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>02 / Training</span><h3>201만 건을 계층 비율 그대로 분할</h3></div>
+            <div class="deep-card-body"><p><code>stratify=y</code>로 train과 test의 혼잡 비율을 모두 30.1%로 유지했습니다. MLP는 52회 반복에서 조기 종료됐고 validation score 0.9138, 최종 loss 0.1738을 기록했습니다.</p><div class="table-wrap"><table class="tech-table"><thead><tr><th>Split / Model</th><th>크기 또는 성능</th><th>의미</th></tr></thead><tbody><tr><td>Train</td><td>1,612,689 × 22</td><td>전체 데이터의 80%</td></tr><tr><td>Test</td><td>403,173 × 22</td><td>동일한 30.1% 혼잡 비율</td></tr><tr><td>Linear SVM</td><td>68.81%</td><td>선형 기준 모델</td></tr><tr><td>3-layer MLP</td><td>91.35%</td><td>비선형 상호작용 반영</td></tr></tbody></table></div><div class="deep-note"><strong>비교 결과:</strong> MLP는 Linear SVM보다 22.54%p 높은 accuracy를 보여 시간·날씨·도로 조건 사이의 비선형 관계를 더 잘 표현했습니다.</div></div>
+          </article>
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>03 / Inference</span><h3>예측을 실제 이동 경로 비교로 연결</h3></div>
+            <div class="deep-card-body"><p>강서구에서 노량진으로 이동하는 세 가지 경로와 복귀 경로 두 가지를 구성하고, 각 경로에 포함된 측정 지점의 시간대별 혼잡을 예측합니다. 2025년은 로컬 날씨를, 그 외 날짜는 Open-Meteo forecast 또는 archive 데이터를 사용합니다.</p><ol class="process-list"><li><strong>Route mapping</strong>올림픽대로·강서 내부도로·신월–여의도 축의 측정 지점 구성</li><li><strong>Weather fallback</strong>정확한 날짜가 없으면 같은 달·시간대 평균값으로 대체</li><li><strong>Calendar context</strong>설날·추석 구간, 공휴일 전후, 장기 연휴 feature 생성</li><li><strong>Result summary</strong>경로별 혼잡 지점과 시간대를 비교해 추천 근거 제공</li></ol></div>
+          </article>
+        </div>
+      </section>
+      <section class="case-study" aria-labelledby="traffic-overview">
+        <div data-reveal><span class="section-index">03 / Retrospective</span><h2 id="traffic-overview">점수에서 사용할 수 있는 예측으로</h2></div>
+        <div data-reveal>
+          <article class="story-block"><h3>담당 범위</h3><p>교통량과 날씨 데이터 결합, 지점·방향별 혼잡 임계값 생성, 22개 feature 설계, MLP 학습·평가와 강서구–노량진 경로 예측 프로그램을 전체 구현했습니다.</p></article>
+          <article class="story-block"><h3>핵심 판단</h3><p>혼잡은 도로마다 기준이 달라야 하므로 전역 임계값 대신 지점·방향별 70퍼센타일을 사용했습니다. 또한 정확도 하나가 아닌 혼잡 F1과 혼동행렬을 함께 봐 실제 탐지 성능을 확인했습니다.</p></article>
+          <article class="story-block"><h3>결과</h3><dl class="metric-grid" aria-label="교통 혼잡 예측 핵심 성과"><div><dt>Data</dt><dd><strong>2.01M</strong><small>12개월 · 138지점</small></dd></div><div><dt>MLP</dt><dd><strong>91.35%</strong><small>accuracy</small></dd></div><div><dt>Congestion</dt><dd><strong>85.63%</strong><small>F1-score</small></dd></div></dl></article>
+          <article class="story-block"><h3>배운 점</h3><p>모델 구조만큼 라벨 정의와 추론 시점의 데이터 계약이 중요했습니다. 학습 때 사용한 feature 순서와 날씨·공휴일 변환을 예측 프로그램에서도 그대로 유지해야 결과를 신뢰할 수 있었습니다.</p></article>
+        </div>
+      </section>
+      <nav class="project-nav" aria-label="다른 프로젝트"><a href="/projects/"><span>← Project timeline</span><strong>전체 프로젝트</strong></a><a href="/projects/parallel-spam-classifier/"><span>Next project →</span><strong>02. Parallel Spam Classifier</strong></a></nav>
+    </main>
+    <footer class="site-footer"><div class="footer-inner shell"><span>© <span data-year></span> 허준범</span><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
+  </body>
+</html>

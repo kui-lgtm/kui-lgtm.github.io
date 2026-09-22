@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="4-Parallel SRAM과 MAC 구조로 구현한 재구성 가능 FIR 필터 RTL 프로젝트" />
+    <meta name="theme-color" content="#071110" />
+    <title>Reconfigurable FIR Filter — 허준범 Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23071110'/%3E%3Cpath d='M17 32h10m10 0h10M32 17v10m0 10v10' stroke='%2375f8d2' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23d5ff75'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="주요 메뉴">
+        <a class="brand" href="/"><span class="brand-mark">HJ</span><span>허준범 / Portfolio</span></a>
+        <ul class="nav-links">
+          <li><a href="/projects/" aria-current="page">Projects</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="project-hero">
+        <div data-reveal>
+          <nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>07</span></nav>
+          <h1>Reconfigurable FIR Filter</h1>
+          <p class="lead">가변 길이 계수를 런타임에 갱신하고 4개의 SRAM·MAC 경로로 병렬 처리하는 FIR 필터를 Verilog RTL로 설계하고, 파형 기반 시나리오로 데이터 흐름과 saturation을 검증했습니다.</p>
+        </div>
+        <dl class="project-meta" data-reveal>
+          <div><dt>Course</dt><dd>디지털시스템설계</dd></div>
+          <div><dt>Period</dt><dd>2025년 2학기</dd></div>
+          <div><dt>Type</dt><dd>Team project · 3 members</dd></div>
+          <div><dt>Role</dt><dd>4-bank SRAM controller · MAC/Adder 검증</dd></div>
+          <div><dt>Language</dt><dd>Verilog HDL</dd></div>
+          <div><dt>Architecture</dt><dd>Folded FIR · 4-Parallel MAC</dd></div>
+          <div><dt>Result</dt><dd>가변 길이·signed·saturation 검증</dd></div>
+        </dl>
+      </header>
+
+      <figure class="project-media project-media-dark" data-reveal>
+        <img src="/assets/images/reconfigurable-fir-filter.svg" alt="IDLE, WRITE, MAC, SUM의 4-state FSM과 4개 SRAM·MAC 및 saturation 가산기 트리로 구성한 FIR 필터 구조" />
+      </figure>
+
+      <section class="project-snapshot" aria-label="Reconfigurable FIR Filter 핵심 사양">
+        <article data-reveal><span>Clock / sample</span><strong>12 MHz / 600 kHz</strong><small>20 clock cycles per sample</small></article>
+        <article data-reveal><span>Parallelism</span><strong>4 SRAM + 4 MAC</strong><small>coefficient parallel fetch</small></article>
+        <article data-reveal><span>Data width</span><strong>3-bit → 16-bit</strong><small>signed input / saturated output</small></article>
+        <article data-reveal><span>Filter length</span><strong>1–63 odd taps</strong><small>21·33·49·63 waveform 확인</small></article>
+      </section>
+
+      <nav class="page-toc" aria-label="Reconfigurable FIR Filter 페이지 목차" data-reveal>
+        <span>On this page</span>
+        <a href="#fir-report"><b>01</b> Verification</a>
+        <a href="#fir-deep"><b>02</b> Deep dive</a>
+        <a href="#fir-overview"><b>03</b> Retrospective</a>
+      </nav>
+
+      <section class="report-showcase" aria-labelledby="fir-report">
+        <div class="report-heading" data-reveal>
+          <div><span class="section-index">Architecture / Verification</span><h2 id="fir-report">구조와 파형으로 검증한 설계</h2></div>
+          <p>컨트롤러 구조와 시뮬레이션 파형을 따라 메모리 접근, MAC 타이밍, 가변 탭, 포화 연산이 의도대로 동작하는지 확인했습니다.</p>
+        </div>
+        <div class="evidence-list">
+          <article class="evidence-item" data-reveal>
+            <figure class="evidence-visual">
+              <img src="/assets/images/reports/fir-controller-diagram.png" alt="4개 SRAM bank와 주소 디코더 및 FSM, MAC controller의 구조" />
+              <figcaption>4-state FSM과 SRAM bank, MAC controller의 연결 구조</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">01 / Control plane</span>
+              <h3>공유 버스 위에서 접근 권한만 분리</h3>
+              <p>네 SRAM은 write data와 local address를 공유합니다. WRITE 상태에서는 외부 주소의 상위 2비트를 디코딩해 한 뱅크만 선택하고, MAC 상태에서는 네 뱅크를 같은 주소로 동시에 읽습니다.</p>
+              <ul class="detail-points">
+                <li><strong>Mode FSM:</strong> IDLE·WRITE·MAC·SUM의 큰 동작을 결정</li>
+                <li><strong>Upper-bit decoder:</strong> 6-bit 주소를 2-bit bank와 4-bit local address로 분리</li>
+                <li><strong>MAC controller:</strong> 필터 길이와 counter를 비교해 필요한 연산 경로만 활성화</li>
+              </ul>
+              <div class="deep-note"><strong>설계 의도:</strong> 데이터 배선은 공유하고 chip-select 제어만 분리해 bank가 늘어나도 인터페이스가 복잡해지지 않게 했습니다.</div>
+            </div>
+          </article>
+
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual evidence-visual-waveform">
+              <img src="/assets/images/reports/fir-sram-write-waveform.png" alt="주소 상위 비트에 따라 SRAM write bank가 선택되고 계수가 저장되는 파형" />
+              <figcaption>주소 상위 비트에 따른 SRAM bank 선택과 계수 기록</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">02 / Memory write</span>
+              <h3>주소가 바뀔 때 선택되는 bank도 함께 이동한다</h3>
+              <p>빨간 박스로 표시된 구간에서 <code>iAddrRam[5:4]</code>가 바뀔 때마다 해당 bank의 write 신호만 활성화됩니다. 같은 시점에 메모리 내부 값이 500, 206, -102처럼 순차 저장되어 주소 디코딩과 실제 데이터 기록이 일치함을 확인했습니다.</p>
+              <ul class="detail-points">
+                <li><strong>관찰 신호:</strong> iAddrRam, iWrDtRam, 각 SRAM의 Csn/Wrn과 내부 memory array</li>
+                <li><strong>검증 기준:</strong> 선택되지 않은 세 bank는 MEM_NO_OP을 유지</li>
+                <li><strong>결론:</strong> 외부의 연속 주소 공간을 네 개의 물리 bank로 안전하게 분배</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual evidence-visual-waveform">
+              <img src="/assets/images/reports/fir-mac-waveform.png" alt="SRAM read부터 MAC 누산과 최종 FIR 출력까지의 내부 타이밍 파형" />
+              <figcaption>SRAM read부터 MAC 누산과 최종 출력까지의 클록 흐름</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">03 / MAC timeline</span>
+              <h3>읽기 지연을 포함해 데이터와 enable을 같은 클록에 정렬</h3>
+              <p>첫 번째 노란 기준선 뒤에서 counter가 SRAM 주소가 되고, 동기식 read 결과가 한 클록 뒤에 latch됩니다. 그 값이 대칭 delay tap과 곱해져 ACC에 누적되고, 마지막 MAC update 이후 SUM enable이 켜진 뒤 다음 샘플 시점에 <code>oFirOut</code>이 갱신됩니다.</p>
+              <div class="evidence-metrics" aria-label="MAC 타이밍 핵심 구간">
+                <div><span>Address</span><strong>counter</strong><small>shared local address</small></div>
+                <div><span>Compute</span><strong>≤ 10 cycles</strong><small>per active MAC</small></div>
+                <div><span>Commit</span><strong>SUM → OUT</strong><small>saturated adder tree</small></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual evidence-visual-waveform">
+              <img src="/assets/images/reports/fir-variable-length-waveform.png" alt="63, 49, 33, 21 tap 설정에 따라 FIR 응답 길이가 달라지는 파형" />
+              <figcaption>63·49·33·21-tap 설정에 따른 유효 응답 변화</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">04 / Reconfiguration</span>
+              <h3>저장된 계수와 실제 사용하는 계수를 분리</h3>
+              <p>SRAM의 사용 범위 밖에는 <code>16'h7000</code>을 dummy 값으로 채웠습니다. 그 상태에서 63·49·33·21 tap으로 길이를 줄여도 파형의 유효 응답 구간만 짧아지고 dummy 값은 출력에 나타나지 않았습니다.</p>
+              <ul class="detail-points">
+                <li><strong>63 taps:</strong> 4개 MAC이 10 / 10 / 10 / 2회 동작</li>
+                <li><strong>33 taps:</strong> 앞의 2개 MAC만 10 / 7회 활성화</li>
+                <li><strong>21 taps:</strong> 10 / 1 / 0 / 0회로 불필요한 bank 연산을 차단</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual evidence-visual-waveform">
+              <img src="/assets/images/reports/fir-saturation-waveform.png" alt="3배 impulse 입력으로 16-bit overflow와 saturation을 검증한 파형" />
+              <figcaption>16-bit 범위를 초과할 때 경계값으로 제한되는 포화 연산</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">05 / Numeric safety</span>
+              <h3>overflow를 wrap-around 대신 경계값으로 고정</h3>
+              <p>큰 dummy coefficient와 3배 impulse로 16-bit 양수 범위를 의도적으로 넘겼습니다. 빨간·파란 응답이 겹치는 구간에서도 출력은 음수로 뒤집히지 않고 32767에 머물렀으며, 이후 음수 항이 더해질 때는 경계값에서 정상적으로 감소했습니다.</p>
+              <ul class="detail-points">
+                <li><strong>MAC 내부:</strong> 확장된 accumulator를 16-bit로 줄일 때 saturation_fixer 적용</li>
+                <li><strong>최종 합산:</strong> 두 양수의 합이 음수 부호로 바뀌면 MAX, 두 음수의 합이 양수로 바뀌면 MIN 선택</li>
+                <li><strong>검증 범위:</strong> 개별 MAC과 최종 adder tree 두 위치에서 포화 동작 확인</li>
+              </ul>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="deep-dive" aria-labelledby="fir-deep">
+        <header class="deep-heading" data-reveal>
+          <div><span class="section-index">Engineering deep dive</span><h2 id="fir-deep">메모리, 연산, 타이밍을 한 주기로 정렬</h2></div>
+          <p>대칭 FIR의 folded 구조로 저장량과 곱셈 수를 줄이고, 4개 메모리 뱅크가 같은 주소를 병렬로 읽도록 구성했습니다. 제어 경로는 모드와 카운터를 기준으로 실제 필요한 MAC만 활성화합니다.</p>
+        </header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>01 / Architecture</span><h3>63 taps를 32 coefficients로 접기</h3></div>
+            <div class="deep-card-body">
+              <p>선형 위상 FIR의 대칭성을 이용해 중심 tap 하나와 좌우 대칭 입력 쌍을 먼저 더한 뒤 동일 계수와 곱했습니다. 따라서 최대 63-tap 필터를 32개의 계수 저장소로 표현할 수 있습니다.</p>
+              <div class="architecture" aria-label="folded FIR 처리 흐름"><div>63-stage delay<br />x[n−k]</div><div>Symmetric pair<br />x[n−k] + x[n+k]</div><div>32 coeff MAC<br />Saturated sum</div></div>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Path</th><th>Stored coeff</th><th>Delay tap</th><th>Role</th></tr></thead>
+                  <tbody>
+                    <tr><td>MAC0 / addr 0</td><td>wTap[0]</td><td>Delay[31]</td><td>center tap</td></tr>
+                    <tr><td>MAC0 / addr 1</td><td>wTap[1]</td><td>Delay[32] + Delay[30]</td><td>symmetric pair 1</td></tr>
+                    <tr><td>MAC1</td><td>wTap[10:19]</td><td>중간 대칭 쌍</td><td>10 coefficients</td></tr>
+                    <tr><td>MAC3 / addr 1</td><td>wTap[31]</td><td>Delay[62] + Delay[0]</td><td>edge taps</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="deep-note"><strong>지연 사양:</strong> group delay는 31 sample이며 입력 정렬을 위한 추가 지연 2가 존재합니다.</div>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>02 / My module</span><h3>4-bank SRAM 접근을 모드별로 중재</h3></div>
+            <div class="deep-card-body">
+              <p>담당한 <code>SRAM_Controller_4Parallel</code>은 WRITE 상태에서 외부 주소의 상위 2비트로 한 뱅크만 선택하고, MAC 상태에서는 네 뱅크를 동시에 read로 전환합니다. 내부 카운터가 네 뱅크의 공통 하위 주소가 됩니다.</p>
+              <pre class="code-sample" aria-label="4-Parallel SRAM controller 핵심 코드"><code>if (state == MAC &amp;&amp; mem_cmd == READ) begin
+  {csn[0], wrn[0]} = MEM_READ;
+  {csn[1], wrn[1]} = MEM_READ;
+  {csn[2], wrn[2]} = MEM_READ;
+  {csn[3], wrn[3]} = MEM_READ;
+  address = counter;
+end else if (state == WRITE &amp;&amp; mem_cmd == WRITE) begin
+  case (external_address[5:4])
+    2'b00: bank0 = MEM_WRITE;
+    2'b01: bank1 = MEM_WRITE;
+    2'b10: bank2 = MEM_WRITE;
+    2'b11: bank3 = MEM_WRITE;
+  endcase
+end</code></pre>
+              <ul class="detail-points">
+                <li><strong>WRITE:</strong> 6-bit 외부 주소를 bank select 2-bit + local address 4-bit로 분해</li>
+                <li><strong>MAC:</strong> 동일 local address의 계수 네 개를 한 주기에 병렬 인출</li>
+                <li><strong>IDLE / SUM:</strong> 모든 chip select를 비활성화해 의도하지 않은 접근 차단</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>03 / Control timing</span><h3>20 clocks 안에서 읽고 누산하고 합산</h3></div>
+            <div class="deep-card-body">
+              <p>12 MHz 시스템에서 600 kHz 샘플링 펄스는 20클록마다 발생합니다. FSM은 샘플 도착 후 MAC 상태로 진입하고, 카운터와 필터 길이를 비교해 유효한 뱅크만 활성화한 뒤 SUM에서 결과를 합칩니다.</p>
+              <ol class="process-list">
+                <li><strong>IDLE</strong>sampling pulse 또는 coefficient update flag를 대기</li>
+                <li><strong>WRITE</strong>외부 주소로 선택한 SRAM bank의 계수를 갱신</li>
+                <li><strong>MAC</strong>counter 주소로 4개 계수를 읽고 곱셈·누산 수행</li>
+                <li><strong>SUM</strong>4개 MAC 출력을 saturation adder tree로 합산</li>
+              </ol>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>iNumOfCoeff</th><th>Half length</th><th>MAC enable count</th><th>검증 목적</th></tr></thead>
+                  <tbody>
+                    <tr><td>21</td><td>11</td><td>10 / 1 / 0 / 0</td><td>짧은 필터와 padding 차단</td></tr>
+                    <tr><td>33</td><td>17</td><td>10 / 7 / 0 / 0</td><td>부분 bank 활성화</td></tr>
+                    <tr><td>49</td><td>25</td><td>10 / 10 / 5 / 0</td><td>세 번째 bank 경계</td></tr>
+                    <tr><td>63</td><td>32</td><td>10 / 10 / 10 / 2</td><td>최대 길이 전체 경로</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>04 / Verification</span><h3>출력뿐 아니라 내부 경로까지 관찰</h3></div>
+            <div class="deep-card-body">
+              <p>연산 모듈 테스트를 맡아 임펄스 응답과 상세 파형을 함께 확인했습니다. 최종 값만 비교하지 않고 coefficient write, memory read, MAC enable, accumulator, summation 순서를 단계별로 추적했습니다.</p>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Scenario</th><th>Stimulus</th><th>Observed result</th></tr></thead>
+                  <tbody>
+                    <tr><td>Coefficient load</td><td>WRITE mode · 4 banks</td><td>상위 주소에 맞는 bank만 write, 값 저장 확인</td></tr>
+                    <tr><td>Impulse</td><td>+1 / −1 signed input</td><td>출력이 계수 및 음의 계수와 동일한 형태</td></tr>
+                    <tr><td>Variable length</td><td>21 / 33 / 49 / 63 taps</td><td>범위 밖 dummy coefficient가 연산에서 차단</td></tr>
+                    <tr><td>Saturation</td><td>16'h7000 coeff · 3× impulse</td><td>MAC 내부와 최종 합산에서 32767로 clamp</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <pre class="code-sample" aria-label="saturation fixer 핵심 코드"><code>if (accumulator &gt; MAX_16)
+  output_value = 16'sh7fff;
+else if (accumulator &lt; MIN_16)
+  output_value = 16'sh8000;
+else
+  output_value = accumulator[15:0];</code></pre>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="case-study" aria-labelledby="fir-overview">
+        <div data-reveal><span class="section-index">05 / Retrospective</span><h2 id="fir-overview">파형에서 원인을 좁혀 가는 RTL 디버깅</h2></div>
+        <div data-reveal>
+          <article class="story-block"><h3>담당 범위</h3><p>4-Parallel SRAM controller를 설계하고, SeqMac과 AdderWithSat 테스트벤치를 맡았습니다. 팀원과 주소·제어 신호 규격을 맞추며 top-level 데이터 경로가 일관되게 연결되는지 확인했습니다.</p></article>
+          <article class="story-block"><h3>검증 관점</h3><p>RTL에서는 코드 한 줄의 논리뿐 아니라 신호가 유효해지는 클록이 중요했습니다. 블록도와 시뮬레이션 파형을 번갈아 보며 write/read 주소, delay tap, 누산 결과가 같은 샘플을 가리키는지 추적했습니다.</p></article>
+          <article class="story-block">
+            <h3>설계 결과</h3>
+            <dl class="metric-grid" aria-label="FIR RTL 핵심 결과">
+              <div><dt>Parallel path</dt><dd><strong>4 ×</strong><small>SRAM + sequential MAC</small></dd></div>
+              <div><dt>Stored coeff</dt><dd><strong>32</strong><small>for max 63 taps</small></dd></div>
+              <div><dt>Output bound</dt><dd><strong>±16-bit</strong><small>−32768–32767</small></dd></div>
+            </dl>
+          </article>
+          <article class="story-block"><h3>개선 방향</h3><p>다음 버전에서는 연산 시작 시 <code>iNumOfCoeff</code>를 레지스터에 고정해 한 샘플 동안의 불변성을 보장할 수 있습니다. FSM 상태를 단순화하고, 남는 클록 여유를 이용해 SRAM·MAC 수를 줄이며, MAC 내부에서 더 이른 saturation 판정을 수행하는 방안도 검토했습니다.</p></article>
+          <article class="story-block"><h3>배운 점</h3><p>여러 모듈의 인터페이스가 얽힌 RTL은 문제를 구조적으로 분리해야 디버깅할 수 있었습니다. 최종 출력에서 시작해 합산, 누산, 메모리, 제어 신호 순으로 역추적하는 방식에 익숙해졌습니다.</p></article>
+        </div>
+      </section>
+
+      <nav class="project-nav" aria-label="다른 프로젝트">
+        <a href="/projects/colored-mnist-classifier/"><span>← Previous project</span><strong>06. Colored MNIST</strong></a>
+        <a href="/projects/arm-image-optimization/"><span>Next project →</span><strong>08. ARM Image Optimization</strong></a>
+      </nav>
+    </main>
+
+    <footer class="site-footer"><div class="footer-inner shell"><span>© <span data-year></span> 허준범</span><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
+  </body>
+</html>

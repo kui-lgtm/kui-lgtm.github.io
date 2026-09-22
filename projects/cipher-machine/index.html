@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="PS/2 키보드와 로터리 엔코더를 사용한 Cipher Machine 프로젝트" />
+    <meta name="theme-color" content="#071110" />
+    <title>Cipher Machine — 허준범 Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23071110'/%3E%3Cpath d='M17 32h10m10 0h10M32 17v10m0 10v10' stroke='%2375f8d2' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23d5ff75'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="주요 메뉴">
+        <a class="brand" href="/"><span class="brand-mark">HJ</span><span>허준범 / Portfolio</span></a>
+        <ul class="nav-links">
+          <li><a href="/projects/" aria-current="page">Projects</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="project-hero">
+        <div data-reveal>
+          <nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>04</span></nav>
+          <h1>Cipher Machine</h1>
+          <p class="lead">키보드로 문자를 입력하고 로터리 엔코더로 이동값을 정해, 시저 암호 변환 결과를 즉시 확인하는 장치입니다.</p>
+        </div>
+        <dl class="project-meta" data-reveal>
+          <div><dt>Course</dt><dd>임베디드 소프트웨어</dd></div>
+          <div><dt>Period</dt><dd>2026 겨울학기</dd></div>
+          <div><dt>Type</dt><dd>Individual project</dd></div>
+          <div><dt>Role</dt><dd>입력 처리 · 암호 로직 · 피드백 구현</dd></div>
+          <div><dt>Platform</dt><dd>ATtiny4313 / C</dd></div>
+          <div><dt>Input</dt><dd>PS/2 Keyboard · Rotary Encoder</dd></div>
+          <div><dt>Output</dt><dd>Character LCD · LED · Buzzer</dd></div>
+        </dl>
+      </header>
+
+      <figure class="project-media" data-reveal>
+        <img src="/assets/images/cipher-circuit.png" alt="키보드, 엔코더, LCD, LED, 부저가 연결된 Cipher Machine 회로도" />
+      </figure>
+
+      <section class="project-snapshot" aria-label="Cipher Machine 핵심 사양">
+        <article data-reveal><span>Controller</span><strong>ATtiny4313</strong><small>16 MHz · interrupt-driven</small></article>
+        <article data-reveal><span>Input paths</span><strong>PS/2 + UART</strong><small>키보드와 PC 터미널 입력</small></article>
+        <article data-reveal><span>Interrupts</span><strong>5 ISRs</strong><small>Timer · INT0 · PCINT ×2 · USART</small></article>
+        <article data-reveal><span>Feedback</span><strong>4 channels</strong><small>LCD · PWM LED · buzzer · UART</small></article>
+      </section>
+
+      <nav class="page-toc" aria-label="Cipher Machine 페이지 목차" data-reveal>
+        <span>On this page</span>
+        <a href="#cipher-demo"><b>01</b> Demo</a>
+        <a href="#cipher-report"><b>02</b> Core logic</a>
+        <a href="#cipher-deep"><b>03</b> Deep dive</a>
+        <a href="#cipher-overview"><b>04</b> Retrospective</a>
+      </nav>
+
+      <section class="demo-section" aria-labelledby="cipher-demo">
+        <div data-reveal>
+          <span class="section-index">Demo / 01:26</span>
+          <h2 id="cipher-demo">작동 모습</h2>
+          <p>키보드 입력, 엔코더로 설정한 이동값, LCD의 암호 변환 결과가 연결되는 전체 흐름을 보여줍니다.</p>
+        </div>
+        <div class="demo-frame" data-reveal>
+          <video controls playsinline preload="metadata" poster="/assets/images/cipher-demo-poster.jpg">
+            <source src="/assets/videos/cipher-machine-demo.mp4" type="video/mp4" />
+            브라우저가 동영상 재생을 지원하지 않습니다.
+          </video>
+        </div>
+      </section>
+
+      <section class="report-showcase" aria-labelledby="cipher-report">
+        <div class="report-heading" data-reveal>
+          <div><span class="section-index">Cipher logic / Device flow</span><h2 id="cipher-report">문자 치환을 장치의 흐름으로</h2></div>
+          <p>입력 문자와 이동값을 받아 새로운 알파벳으로 치환하는 원리를 키보드 입력, 변환, LCD 출력의 단계로 연결했습니다.</p>
+        </div>
+        <div class="report-grid">
+          <figure class="report-figure report-figure-wide" data-reveal>
+            <img src="/assets/images/reports/cipher-substitution-scheme.jpg" alt="알파벳을 다른 문자로 대응시키는 단순 치환 암호 예시" />
+            <figcaption>알파벳 치환 원리를 Caesar shift의 입력 → 이동값 적용 → 출력 흐름으로 단순화했습니다.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="deep-dive" aria-labelledby="cipher-deep">
+        <header class="deep-heading" data-reveal>
+          <div><span class="section-index">Engineering deep dive</span><h2 id="cipher-deep">여러 입력을 이벤트로 분리하기</h2></div>
+          <p>PS/2 비트 수신, 엔코더 방향 판정, 시간 기반 피드백과 UART 입력을 각각의 인터럽트와 메인 루프 작업으로 나눴습니다.</p>
+        </header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>01 / Event map</span><h3>인터럽트는 수집하고 메인은 해석</h3></div>
+            <div class="deep-card-body">
+              <p>인터럽트에서는 시점이 중요한 최소 정보만 수집하고, 문자 해석과 LCD 출력은 메인 루프에서 처리합니다. 긴 LCD 지연이 PS/2 비트 수신을 방해하지 않도록 역할을 분리한 구조입니다.</p>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Event</th><th>Handler</th><th>Captured state</th><th>Main-loop use</th></tr></thead>
+                  <tbody>
+                    <tr><td>1 ms tick</td><td>TIMER0 COMPA</td><td><code>sys_tick</code> 증가</td><td>LED fade와 부저 종료 시간을 비차단 방식으로 관리</td></tr>
+                    <tr><td>PS/2 falling edge</td><td>INT0</td><td>11비트를 <code>scanCode</code>에 조립</td><td>make/break·Shift 상태를 해석해 ASCII로 변환</td></tr>
+                    <tr><td>Encoder A/B</td><td>PCINT1·PCINT2</td><td>위상 비교로 <code>counter</code> 증감</td><td>0–25 이동값과 음계 피드백으로 사용</td></tr>
+                    <tr><td>UART receive</td><td>USART0 RX</td><td>수신 문자를 <code>g_rxByte</code>에 저장</td><td>키보드와 같은 암호화 경로로 전달하고 echo</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>02 / Transform</span><h3>스캔 코드에서 암호문까지</h3></div>
+            <div class="deep-card-body">
+              <p>PS/2 프레임에서 얻은 스캔 코드는 PROGMEM의 두 키맵 중 하나로 변환됩니다. Shift 키 상태를 별도로 관리하고, 알파벳에만 Caesar shift를 적용해 숫자와 기호는 그대로 유지합니다.</p>
+              <ol class="process-list">
+                <li><strong>11-bit frame 수집</strong>Start, 8-bit data, parity, stop을 클록 하강 에지마다 조립합니다.</li>
+                <li><strong>키 상태 해석</strong><code>F0</code> break와 <code>E0</code> modifier를 구분하고 좌·우 Shift 상태를 유지합니다.</li>
+                <li><strong>이동값 정규화</strong>엔코더 값에 <code>% 26</code>을 적용해 알파벳 범위로 제한합니다.</li>
+                <li><strong>출력 동기화</strong>암호문은 LCD, 원문과 현재 매핑은 UART, 조작 시점은 부저와 PWM LED로 피드백합니다.</li>
+              </ol>
+              <pre class="code-sample" aria-label="Caesar cipher 변환 코드"><code>int16_t s = shift % 26;
+if (s &lt; 0) s += 26;
+
+if (ch &gt;= 'A' &amp;&amp; ch &lt;= 'Z')
+  return ((ch - 'A' + s) % 26) + 'A';
+if (ch &gt;= 'a' &amp;&amp; ch &lt;= 'z')
+  return ((ch - 'a' + s) % 26) + 'a';</code></pre>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>03 / Timing & UX</span><h3>블로킹을 줄인 피드백 설계</h3></div>
+            <div class="deep-card-body">
+              <p>Timer0의 1 ms tick을 기준으로 짧은 소리와 LED 밝기를 갱신합니다. 입력을 받은 뒤 기다리는 대신 종료 시각을 저장해 두고 메인 루프가 시간이 되었을 때 출력을 끕니다.</p>
+              <ul class="detail-points">
+                <li><strong>LED fade:</strong> 10 ms마다 OCR0B를 증감해 0–255 밝기 범위를 왕복</li>
+                <li><strong>키 입력음:</strong> 20 ms 동안 4옥타브 C음을 출력</li>
+                <li><strong>엔코더 피드백:</strong> 100 ms 동안 이동값을 8개 음계에 대응</li>
+                <li><strong>LCD 정책:</strong> 16문자를 채우면 화면을 지우고 첫 칸부터 새 암호문을 표시</li>
+                <li><strong>현재 한계:</strong> 11비트 프레임의 parity·stop bit 오류를 명시적으로 검증하지 않으며 입력 기록을 보존하지 않음</li>
+              </ul>
+              <div class="deep-note"><strong>다음 개선:</strong> PS/2 프레임 검증과 ring buffer를 추가하면 오류가 있는 패킷을 버리고, LCD 출력 중 들어온 연속 입력도 안전하게 보존할 수 있습니다.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="case-study" aria-labelledby="cipher-overview">
+        <div data-reveal><span class="section-index">02 / Overview</span><h2 id="cipher-overview">여러 입력을 끊김 없이 처리하는 인터페이스</h2></div>
+        <div data-reveal>
+          <article class="story-block">
+            <h3>구성</h3>
+            <p>PS/2 키보드 스캔 코드를 문자로 변환하고, 로터리 엔코더가 지정한 0–25 범위의 이동값을 적용합니다. 변환 전후 문자열과 현재 설정을 LCD로 보여주고 LED와 부저로 조작 피드백을 전달합니다.</p>
+            <div class="architecture" aria-label="시스템 흐름"><div>Keyboard · Encoder<br />External input</div><div>Scan decode · Caesar shift<br />AVR</div><div>LCD · LED · Buzzer<br />Feedback</div></div>
+          </article>
+          <article class="story-block">
+            <h3>핵심 과제</h3>
+            <p>키보드의 직렬 데이터는 클록 에지에 맞춰 비트를 수신해야 하고, 동시에 엔코더와 타이머 기반 출력도 처리해야 했습니다. 단순한 순차 처리로는 입력 누락과 화면 갱신 지연이 생길 수 있습니다.</p>
+          </article>
+          <article class="story-block">
+            <h3>해결</h3>
+            <p>PS/2 클록의 외부 인터럽트에서 스캔 데이터를 수집하고, 타이머로 시스템 시간을 관리했습니다. 입력 해석과 화면 출력은 메인 흐름으로 분리해 인터럽트의 작업량을 줄였습니다.</p>
+          </article>
+          <article class="story-block">
+            <h3>배운 점</h3>
+            <p>사람이 조작하는 장치에서는 계산 결과뿐 아니라 입력 시점과 피드백의 일관성이 사용성을 좌우합니다. 인터럽트와 상태 변수를 나눠 다중 입력을 관리하는 방법을 익혔습니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <nav class="project-nav" aria-label="다른 프로젝트">
+        <a href="/projects/dino-jump/"><span>← Previous project</span><strong>03. Dino Jump</strong></a>
+        <a href="/projects/touch-paintbrush/"><span>Next project →</span><strong>05. Touch Paintbrush</strong></a>
+      </nav>
+    </main>
+
+    <footer class="site-footer"><div class="footer-inner shell"><span>© <span data-year></span> 허준범</span><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
+  </body>
+</html>
