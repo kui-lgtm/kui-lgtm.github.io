@@ -407,6 +407,10 @@ a {
   min-height: 32rem;
 }
 
+.project-card.project-card-third {
+  grid-column: span 4;
+}
+
 .project-card-wide .project-visual {
   min-height: clamp(16rem, 34vw, 24rem);
 }
@@ -957,6 +961,62 @@ a {
   background: #020706;
 }
 
+.demo-poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #020706;
+}
+
+.demo-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.82;
+  transition: opacity 180ms ease, transform 300ms ease;
+}
+
+.demo-poster::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(to top, rgba(2, 7, 6, 0.8), transparent 58%);
+}
+
+.demo-poster:hover img {
+  opacity: 0.96;
+  transform: scale(1.015);
+}
+
+.demo-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  width: clamp(3.5rem, 8vw, 5rem);
+  height: clamp(3.5rem, 8vw, 5rem);
+  place-items: center;
+  padding-left: 0.25rem;
+  color: #071110;
+  background: var(--lime);
+  border-radius: 50%;
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.38);
+  transform: translate(-50%, -50%);
+}
+
+.demo-watch {
+  position: absolute;
+  right: 1rem;
+  bottom: 0.85rem;
+  z-index: 2;
+  color: var(--ink);
+  font-weight: 750;
+}
+
 .report-showcase {
   margin-bottom: clamp(5rem, 10vw, 9rem);
 }
@@ -1218,6 +1278,10 @@ a {
 .deep-card-body > p {
   margin: 0;
   color: var(--muted);
+}
+
+.deep-card-body {
+  min-width: 0;
 }
 
 .deep-card-body > p + * {
@@ -1556,6 +1620,13 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .project-hero > *,
+  .evidence-copy,
+  .deep-card-body,
+  .case-study > * {
+    min-width: 0;
+  }
+
   .evidence-visual {
     border-right: 0;
     border-bottom: 1px solid var(--line);
@@ -1620,6 +1691,10 @@ a {
   .page-hero h1,
   .project-hero h1 {
     font-size: clamp(3rem, 17vw, 5rem);
+  }
+
+  .project-hero h1 {
+    overflow-wrap: anywhere;
   }
 
   .section-heading {

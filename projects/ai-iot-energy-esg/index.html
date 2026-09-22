@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="ESP32-C3, MQTT, Docker, NILM 모델을 연결한 AI·IoT 에너지 ESG 시스템 프로젝트" />
+    <meta name="theme-color" content="#071110" />
+    <title>AI · IoT Energy ESG — 허준범 Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23071110'/%3E%3Cpath d='M17 32h10m10 0h10M32 17v10m0 10v10' stroke='%2375f8d2' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23d5ff75'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="주요 메뉴">
+        <a class="brand" href="/"><span class="brand-mark">HJ</span><span>허준범 / Portfolio</span></a>
+        <ul class="nav-links">
+          <li><a href="/projects/" aria-current="page">Projects</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="project-hero">
+        <div data-reveal>
+          <nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>09</span></nav>
+          <h1>AI · IoT Energy ESG</h1>
+          <p class="lead">센서 노드에서 측정한 전력·환경 데이터를 MQTT와 컨테이너 기반 서버로 연결하고, 사용 패턴 분석·이상 탐지·ESG 지표 생성까지 하나의 에너지 관리 흐름으로 구현했습니다.</p>
+        </div>
+        <dl class="project-meta" data-reveal>
+          <div><dt>Program</dt><dd>2025 한이음 드림업</dd></div>
+          <div><dt>Period</dt><dd>2025.03–2025.11</dd></div>
+          <div><dt>Type</dt><dd>Team project · 5 members</dd></div>
+          <div><dt>Role</dt><dd>데이터 기준 · 전처리 자동화 · 피드백 루프</dd></div>
+          <div><dt>Device</dt><dd>ESP32-C3 · ACS712 · DHT22 · CDS</dd></div>
+          <div><dt>Stack</dt><dd>MQTT · Docker · MySQL · PyTorch</dd></div>
+          <div><dt>Model</dt><dd>Seq2Point · UNet-NILM</dd></div>
+        </dl>
+      </header>
+
+      <figure class="project-media" data-reveal>
+        <img src="/assets/images/hani-iot-energy.jpg" alt="전력 제어 멀티탭과 센서 모듈로 구성한 IoT 에너지 관리 장치" />
+      </figure>
+
+      <section class="project-snapshot" aria-label="AI IoT Energy ESG 핵심 사양">
+        <article data-reveal><span>Edge</span><strong>ESP32-C3</strong><small>전력·온습도·조도 수집</small></article>
+        <article data-reveal><span>Transport</span><strong>MQTT</strong><small>센서 데이터와 제어 명령</small></article>
+        <article data-reveal><span>Intelligence</span><strong>2 NILM models</strong><small>저지연 추정 · 시퀀스 분석</small></article>
+        <article data-reveal><span>My focus</span><strong>Data pipeline</strong><small>기준·버전·전처리·피드백</small></article>
+      </section>
+
+      <nav class="page-toc" aria-label="AI IoT Energy ESG 페이지 목차" data-reveal>
+        <span>On this page</span>
+        <a href="#hani-demo"><b>00</b> Demo</a>
+        <a href="#hani-system"><b>01</b> System</a>
+        <a href="#hani-data"><b>02</b> Data & AI</a>
+        <a href="#hani-problems"><b>03</b> Problem solving</a>
+        <a href="#hani-overview"><b>04</b> Retrospective</a>
+      </nav>
+
+      <section class="demo-section" aria-labelledby="hani-demo">
+        <div data-reveal>
+          <span class="section-index">System demo</span>
+          <h2 id="hani-demo">실제 장치 시연 영상</h2>
+          <p>센서 장치와 전력 제어 모듈이 동작하는 모습을 확인할 수 있습니다. 아래 화면을 누르면 실제 YouTube 영상이 새 탭에서 열립니다.</p>
+        </div>
+        <div class="demo-frame" data-reveal>
+          <a class="demo-poster" href="https://www.youtube.com/watch?v=AbdshAkhsO4" target="_blank" rel="noreferrer" aria-label="AI와 IoT를 활용한 에너지 절약 ESG 시스템 시연 영상을 YouTube에서 보기">
+            <img src="/assets/images/hani-demo-poster.jpg" alt="선풍기와 센서형 전력 제어 장치를 연결한 프로젝트 시연 장면" />
+            <span class="demo-play" aria-hidden="true">▶</span>
+            <span class="demo-watch">YouTube에서 영상 보기 ↗</span>
+          </a>
+        </div>
+      </section>
+
+      <section class="report-showcase" aria-labelledby="hani-system">
+        <div class="report-heading" data-reveal>
+          <div><span class="section-index">Edge to insight</span><h2 id="hani-system">측정에서 제안까지 이어지는 시스템</h2></div>
+          <p>비 IoT 장비에 센서와 릴레이를 결합하고, 수집·저장·분석·시각화·제어 기능을 독립 모듈로 나눠 확장 가능한 구조를 만들었습니다.</p>
+        </div>
+        <div class="evidence-list">
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual">
+              <img src="/assets/images/reports/hani-system-architecture.jpg" alt="ESP32와 MQTT 브로커, 컨테이너 서버, 데이터베이스, AI, 웹 화면을 연결한 시스템 구성도" />
+              <figcaption>ESP32 → MQTT → API·DB·AI → 대시보드·ESG 분석으로 이어지는 데이터 경로</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">01 / Architecture</span>
+              <h3>센서 노드와 분석 서비스를 느슨하게 연결</h3>
+              <p>ESP32-C3가 전력·온습도·조도 값을 수집해 Mosquitto MQTT 브로커로 발행합니다. Docker Compose가 API, MySQL, AI 분석, 웹 화면, LLM 기반 ESG 모듈을 분리해 운영하고 결과를 다시 사용자 화면과 제어 경로로 전달합니다.</p>
+              <ol class="process-list">
+                <li><strong>Sense</strong>전류·온습도·조도 측정과 상태 LED 표시</li>
+                <li><strong>Publish</strong>Wi-Fi와 MQTT로 시계열 데이터 업링크</li>
+                <li><strong>Analyze</strong>저장·전처리·NILM·이상 탐지 수행</li>
+                <li><strong>Act</strong>대시보드·ESG 요약·릴레이 제어로 결과 연결</li>
+              </ol>
+            </div>
+          </article>
+
+          <article class="evidence-item" data-reveal>
+            <figure class="evidence-visual">
+              <img src="/assets/images/hani-iot-energy.jpg" alt="멀티탭 전력 제어 모듈과 온습도 센서 모듈" />
+              <figcaption>기존 전기 장치에 연결할 수 있는 센서·릴레이 기반 프로토타입</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">02 / Physical layer</span>
+              <h3>비 IoT 장비를 측정 가능한 장치로 전환</h3>
+              <p>콘센트형 구조를 사용해 기존 장비를 개조하지 않고 전력 사용량을 관찰하고 원격으로 전원 라인을 제어하도록 설계했습니다.</p>
+              <ul class="detail-points">
+                <li><strong>ACS712:</strong> 전류를 측정해 소비전력과 이상 상태 판단에 활용</li>
+                <li><strong>DHT22 · CDS:</strong> 온습도와 밝기를 에너지 사용 맥락으로 결합</li>
+                <li><strong>Relay · LED:</strong> 원격 ON/OFF와 장치 상태 피드백 제공</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="evidence-item" data-reveal>
+            <figure class="evidence-visual">
+              <img src="/assets/images/reports/hani-realtime-dashboard.jpg" alt="현재 전력과 환경 정보 및 최근 전력 사용 추이를 보여주는 실시간 대시보드" />
+              <figcaption>현재 사용량·환경 정보·최근 50개 측정값을 한 화면에서 확인</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">03 / Monitoring</span>
+              <h3>원시 센서 값을 운영 정보로 변환</h3>
+              <p>현재 전력과 온도·습도·조도를 함께 표시하고, 시계열 그래프에 이상 지점을 구분해 사용자가 변화와 경고 원인을 빠르게 파악하도록 구성했습니다.</p>
+              <div class="deep-note"><strong>인터페이스 목적:</strong> 실시간 상태 확인과 장기 패턴 분석을 같은 데이터 흐름 위에서 제공하는 것입니다.</div>
+            </div>
+          </article>
+
+          <article class="evidence-item" data-reveal>
+            <figure class="evidence-visual">
+              <img src="/assets/images/reports/hani-anomaly-dashboard.jpg" alt="전력 및 온도 이상 상태와 실시간 알림을 표시한 화면" />
+              <figcaption>전력·온도 임계 초과를 상태 카드와 알림 목록으로 표시</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">04 / Detection</span>
+              <h3>이상 상태를 값이 아닌 사건으로 전달</h3>
+              <p>센서 값과 환경 데이터를 결합해 이상 징후를 판단하고, 위험도·발생 시각·대상 장치를 알림으로 남깁니다. 사용자는 그래프를 계속 감시하지 않아도 조치가 필요한 상태를 확인할 수 있습니다.</p>
+              <ul class="detail-points">
+                <li><strong>입력:</strong> 전력, 실내 온습도, 외부 환경 맥락</li>
+                <li><strong>판단:</strong> 임계치와 분석 모델을 이용한 비정상 패턴 구분</li>
+                <li><strong>출력:</strong> 실시간 알림과 누적 이상 건수</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="evidence-item" data-reveal>
+            <figure class="evidence-visual evidence-visual-portrait">
+              <img src="/assets/images/reports/hani-esg-report.jpg" alt="월별 전력 사용량과 탄소 배출량, 전기요금, 이상 감지, ESG 등급을 요약한 화면" />
+              <figcaption>월별 전력·탄소·비용·이상 건수와 개선 의견을 연결한 ESG 요약</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">05 / ESG feedback</span>
+              <h3>측정 데이터를 행동 가능한 월간 지표로 정리</h3>
+              <p>프로토타입 화면은 월별 소비전력과 탄소 배출량, 예상 전기요금, 이상 감지 건수를 함께 보여주고 이전 달과의 변화를 바탕으로 등급과 종합 의견을 제시합니다.</p>
+              <div class="evidence-metrics" aria-label="8월 ESG 화면 예시">
+                <div><span>Energy</span><strong>124.7 kWh</strong><small>8월 사용량</small></div>
+                <div><span>Carbon</span><strong>56.3 kgCO₂</strong><small>환산 배출량</small></div>
+                <div><span>Change</span><strong>−21.9%</strong><small>전월 대비</small></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="deep-dive" aria-labelledby="hani-data">
+        <header class="deep-heading" data-reveal>
+          <div><span class="section-index">My contribution</span><h2 id="hani-data">데이터가 다시 학습으로 돌아가는 구조</h2></div>
+          <p>제 담당은 센서 데이터를 모으는 단계에서 끝나지 않았습니다. 수집 기준과 라벨 규칙을 정하고, 버전·전처리·분석 결과가 다음 학습 실험으로 이어지도록 데이터 운영 흐름을 정리했습니다.</p>
+        </header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>01 / Data contract</span><h3>수집 기준과 라벨 규칙 정의</h3></div>
+            <div class="deep-card-body">
+              <p>시간대별 전력 시계열과 온습도·조도 정보를 같은 기준으로 결합할 수 있도록 데이터 항목과 수집 간격을 정리했습니다. 기기 상태와 이상 구간을 학습 데이터로 사용할 수 있도록 라벨링·증강 절차도 함께 설계했습니다.</p>
+              <div class="architecture" aria-label="데이터 처리 흐름"><div>Sensor stream<br />Power · Environment</div><div>Clean · Label<br />Window · Normalize</div><div>Train · Analyze<br />Feedback</div></div>
+              <ul class="detail-points">
+                <li><strong>정합성:</strong> 타임스탬프와 센서 필드를 표준화해 서로 다른 수집원을 결합</li>
+                <li><strong>학습 단위:</strong> 슬라이딩 윈도우와 기기 상태 라벨을 모델 입력에 맞게 구성</li>
+                <li><strong>추적성:</strong> 데이터셋과 전처리 결과를 버전으로 관리해 실험 기준 유지</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>02 / Model strategy</span><h3>지연과 정밀도에 따라 두 모델 비교</h3></div>
+            <div class="deep-card-body">
+              <p>전력 총량에서 기기별 사용을 추정하는 NILM 문제에 Seq2Point와 UNet-NILM을 적용했습니다. 두 모델을 동시에 고정하기보다 실시간 응답과 정교한 시퀀스 분석이라는 목적에 따라 선택·비교했습니다.</p>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Model</th><th>Prediction</th><th>Use case</th></tr></thead>
+                  <tbody>
+                    <tr><td>Seq2Point</td><td>입력 창 중앙 시점의 기기 전력</td><td>저지연 추정과 실시간 활용</td></tr>
+                    <tr><td>UNet-NILM</td><td>전 구간 전력 + ON/OFF 상태</td><td>세밀한 기기 분해와 패턴 분석</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="deep-note"><strong>재현성:</strong> 장치 자동 선택, 로그·결과 폴더 규격, 무작위 고정값, 임계치와 오차 지표를 문서화해 실행 조건을 통제했습니다.</div>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>03 / Feedback loop</span><h3>분석 결과를 다음 데이터 버전에 반영</h3></div>
+            <div class="deep-card-body">
+              <p>모델 결과의 오차와 이상 구간을 다시 확인해 라벨·전처리·윈도우 설정을 조정하는 피드백 루프를 운영했습니다. 실험 결과가 파일마다 흩어지지 않도록 로그와 산출물 형식을 표준화했습니다.</p>
+              <ol class="process-list">
+                <li><strong>Collect</strong>센서 스트림과 기기 운전 상태를 함께 기록</li>
+                <li><strong>Validate</strong>누락·범위·동기화 오류를 확인하고 정제</li>
+                <li><strong>Train</strong>동일한 데이터 버전과 실행 규칙으로 모델 비교</li>
+                <li><strong>Review</strong>오차 구간을 라벨·전처리 규칙에 다시 반영</li>
+              </ol>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="deep-dive" aria-labelledby="hani-problems">
+        <header class="deep-heading" data-reveal>
+          <div><span class="section-index">System debugging</span><h2 id="hani-problems">실환경에서 드러난 세 가지 경계</h2></div>
+          <p>센서 신호, RTOS 태스크, 컨테이너 네트워크처럼 서로 다른 계층의 문제가 한 시스템 안에서 연결됐습니다. 각 문제를 관측 가능한 단위로 나누고 원인을 좁혔습니다.</p>
+        </header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>01 / Signal</span><h3>교류 센서 노이즈와 유효값 계산</h3></div>
+            <div class="deep-card-body"><p>전력 센서 값이 불규칙하게 변동해 센서를 교체한 뒤에도 교류 파형의 노이즈가 남았습니다. 오실로스코프로 신호를 확인하고 DSP 관점의 유효값 계산을 적용해 미세한 교류 전압에서 사용할 측정값을 만들었습니다.</p></div>
+          </article>
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>02 / Firmware</span><h3>FreeRTOS 자원과 동기화 조정</h3></div>
+            <div class="deep-card-body"><p>ESP32 태스크의 stack size 부족으로 전체 동작이 중단되는 문제를 파라미터 모니터링과 재조정으로 해결했습니다. 센서 측정 시점을 맞추기 위해 우선순위를 다시 배분하고 mutex·semaphore를 적용했습니다.</p></div>
+          </article>
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>03 / Infrastructure</span><h3>컨테이너 통신 실패를 계층별로 추적</h3></div>
+            <div class="deep-card-body"><p>비동기 네트워크 처리와 Docker Compose의 서비스 이름 기반 DNS가 충돌해 MQTT 데이터가 웹 클라이언트까지 도달하지 않는 문제가 발생했습니다. 주소 해석과 컨테이너 시작 시점을 분리해 점검하고, 명시적 주소 참조로 통신 경로를 안정화했습니다.</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="case-study" aria-labelledby="hani-overview">
+        <div data-reveal><span class="section-index">04 / Retrospective</span><h2 id="hani-overview">하나의 기능보다 전체 흐름을 운영</h2></div>
+        <div data-reveal>
+          <article class="story-block"><h3>담당 범위</h3><p>데이터 수집 기준과 라벨링·증강 프로세스를 설계하고, 시계열 전력 데이터셋의 버전 관리와 전처리 자동화를 담당했습니다. 학습 결과가 다음 데이터 정제와 실험으로 연결되도록 분석 피드백 루프도 운영했습니다.</p></article>
+          <article class="story-block"><h3>팀에서의 연결 지점</h3><p>센서·서버·웹·AI 담당자가 같은 데이터를 다르게 해석하지 않도록 필드와 결과 형식을 조율했습니다. 주 2회 회의와 코드 리뷰, Git·공유 문서를 이용해 인터페이스 변경과 진행 상황을 공유했습니다.</p></article>
+          <article class="story-block">
+            <h3>프로젝트 결과</h3>
+            <dl class="metric-grid" aria-label="AI IoT Energy ESG 프로젝트 범위">
+              <div><dt>Data path</dt><dd><strong>End-to-end</strong><small>센서 → 분석 → 화면</small></dd></div>
+              <div><dt>Deployment</dt><dd><strong>Docker</strong><small>모듈별 컨테이너 운영</small></dd></div>
+              <div><dt>Program</dt><dd><strong>한이음</strong><small>드림업 프로젝트 출품</small></dd></div>
+            </dl>
+          </article>
+          <article class="story-block"><h3>배운 점</h3><p>모델 정확도만큼 센서 품질, 시간 동기화, 실행 환경, 로그 규격이 중요했습니다. 여러 계층을 잇는 프로젝트에서는 각 모듈의 입력과 출력을 명확히 정의하는 일이 문제 해결 속도와 재현성을 결정한다는 점을 배웠습니다.</p></article>
+          <article class="story-block"><h3>작동 영상</h3><p>센서 장치와 실시간 모니터링 흐름은 <a class="text-link" href="https://www.youtube.com/watch?v=AbdshAkhsO4" target="_blank" rel="noreferrer">프로젝트 시연 영상</a>에서도 확인할 수 있습니다.</p></article>
+        </div>
+      </section>
+
+      <nav class="project-nav" aria-label="다른 프로젝트">
+        <a href="/projects/reconfigurable-fir-filter/"><span>← Previous project</span><strong>08. Reconfigurable FIR</strong></a>
+        <a href="/projects/arm-image-optimization/"><span>Next project →</span><strong>10. ARM Image Optimization</strong></a>
+      </nav>
+    </main>
+
+    <footer class="site-footer"><div class="footer-inner shell"><span>© <span data-year></span> 허준범</span><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
+  </body>
+</html>

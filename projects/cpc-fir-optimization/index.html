@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="2025년 디지털시스템설계 FIR 필터를 2026 프로젝트 보고서 챌린지의 2차·3차 발표 심사에서 개선하고 RTL 자원을 절감한 프로젝트" />
+    <meta name="theme-color" content="#071110" />
+    <title>CPC FIR RTL Optimization — 허준범 Portfolio</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23071110'/%3E%3Cpath d='M17 32h10m10 0h10M32 17v10m0 10v10' stroke='%2375f8d2' stroke-width='6' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23d5ff75'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/assets/style.css" />
+    <script src="/assets/main.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <nav class="nav shell" aria-label="주요 메뉴">
+        <a class="brand" href="/"><span class="brand-mark">HJ</span><span>허준범 / Portfolio</span></a>
+        <ul class="nav-links">
+          <li><a href="/projects/" aria-current="page">Projects</a></li>
+          <li><a href="/#about">About</a></li>
+          <li><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main" class="shell">
+      <header class="project-hero">
+        <div data-reveal>
+          <nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>01</span></nav>
+          <h1>CPC FIR RTL Optimization</h1>
+          <p class="lead">2025년 2학기 디지털시스템설계 결과보고서로 2026 프로젝트 보고서 챌린지(Class Project Challenge)에 참가했습니다. 2차·3차 발표 심사를 거치며 4-bank·4-MAC FIR의 제어·수치 경로를 안정화하고 2-bank·2-MAC으로 재설계했으며, 저는 RTL을 담당해 처리량을 유지하면서 합성 자원을 줄였습니다.</p>
+        </div>
+        <dl class="project-meta" data-reveal>
+          <div><dt>Program</dt><dd>2026 프로젝트 보고서 챌린지</dd></div>
+          <div><dt>Period</dt><dd>2026.06–07</dd></div>
+          <div><dt>Origin</dt><dd>2025-2 디지털시스템설계</dd></div>
+          <div><dt>Category</dt><dd>시스템 SW · 3인 팀</dd></div>
+          <div><dt>My role</dt><dd>RTL 자원 최적화 · 제어/데이터 경로 개선</dd></div>
+          <div><dt>Platform</dt><dd>Verilog · Vivado · PYNQ-Z2</dd></div>
+          <div><dt>Result</dt><dd>FirTop LUT −38.7% · FF −8.8%</dd></div>
+        </dl>
+      </header>
+
+      <figure class="project-media project-media-dark" data-reveal>
+        <img src="/assets/images/cpc-fir-optimization.svg" alt="기존 4-bank 4-MAC FIR 필터를 2-bank 2-MAC 구조로 줄이고 20클록 샘플 주기 안에 연산하는 RTL 최적화 구조" />
+      </figure>
+
+      <section class="project-snapshot" aria-label="CPC FIR RTL 최적화 핵심 성과">
+        <article data-reveal><span>Parallel MAC</span><strong>4 → 2</strong><small>동일 600 kHz throughput 유지</small></article>
+        <article data-reveal><span>FirTop LUT</span><strong>815 → 500</strong><small>38.7% 감소</small></article>
+        <article data-reveal><span>FirTop FF</span><strong>897 → 818</strong><small>8.8% 감소</small></article>
+        <article data-reveal><span>Accumulator</span><strong>25-bit</strong><small>최종 단계에서만 16-bit saturation</small></article>
+      </section>
+
+      <nav class="page-toc" aria-label="CPC FIR RTL Optimization 페이지 목차" data-reveal>
+        <span>On this page</span>
+        <a href="#cpc-evolution"><b>01</b> Evolution</a>
+        <a href="#cpc-second"><b>02</b> 2nd review</a>
+        <a href="#cpc-third"><b>03</b> 3rd review</a>
+        <a href="#cpc-validation"><b>04</b> FPGA validation</a>
+        <a href="#cpc-role"><b>05</b> My role</a>
+      </nav>
+
+      <section class="deep-dive" aria-labelledby="cpc-evolution">
+        <header class="deep-heading" data-reveal>
+          <div><span class="section-index">Class Project Challenge</span><h2 id="cpc-evolution">교과목 결과물을 심사 단계마다 발전시켰습니다</h2></div>
+          <p>CPC는 차세대반도체 교과목에서 작성한 프로젝트 결과보고서를 평가하는 대회입니다. 1차는 기존 보고서로 서류 심사를 진행하고, 2차·3차 발표 심사부터 추가 실험과 보완 내용을 전후대비표와 함께 제출할 수 있습니다.</p>
+        </header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>Competition context</span><h3>Class Project에서 Engineering Iteration으로</h3></div>
+            <div class="deep-card-body">
+              <p>교과목 프로젝트에서는 63-tap 대칭 FIR을 32개의 folded coefficient로 줄이고, 네 개의 SRAM과 MAC을 병렬로 동작시켰습니다. CPC에서는 이 수업 결과물을 출발점으로 심사 피드백과 추가 검증을 반영해 설계를 단계적으로 개선했습니다.</p>
+              <div class="architecture" aria-label="CPC 심사와 설계 개선 단계">
+                <div><strong>1차 서류 심사</strong><br />2025-2 결과보고서</div>
+                <div><strong>2차 발표 심사</strong><br />제어·누산 안정화</div>
+                <div><strong>3차 발표 심사</strong><br />자원 절감·보드 검증</div>
+              </div>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Stage</th><th>Official schedule</th><th>Portfolio focus</th></tr></thead>
+                  <tbody>
+                    <tr><td>1차 서류 심사</td><td>2026.06.17</td><td>교과목 결과보고서와 기존 RTL</td></tr>
+                    <tr><td>2차 발표 심사</td><td>2026.06.27</td><td>FSM·counter·coefficient latch·누산 폭 개선</td></tr>
+                    <tr><td>3차 발표 심사</td><td>2026.07.10</td><td>2-MAC 자원 최적화·SoC 연동·FPGA 검증</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="deep-note"><strong>대회 맥락:</strong> 숭실대학교 차세대반도체 혁신융합대학사업단이 개최한 시스템 SW 분야 대회입니다. <a href="https://www.disu.ac.kr/community/notice?md=v&amp;bbsidx=8642" target="_blank" rel="noreferrer">공식 개최 안내 ↗</a><br /><strong>연결 프로젝트:</strong> 원형 설계와 초기 검증 과정은 <a href="/projects/reconfigurable-fir-filter/">Reconfigurable FIR Filter</a> 페이지에서 확인할 수 있습니다.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="report-showcase" aria-labelledby="cpc-second">
+        <div class="report-heading" data-reveal>
+          <div><span class="section-index">Second presentation review / Stability</span><h2 id="cpc-second">2차 발표 심사에서 RTL의 기준을 명확하게</h2></div>
+          <p>2차 발표 심사를 준비하며 곧바로 병렬 자원을 줄이기 전에, 상태 전환·카운터·가변 길이 입력·누산 비트 폭이 한 샘플 동안 일관되게 동작하도록 제어와 데이터 경로를 정리했습니다.</p>
+        </div>
+        <div class="evidence-list">
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual">
+              <img src="/assets/images/reports/cpc-fsm-before-after.png" alt="기존 IDLE WRITE MAC SUM 상태 구조와 SUM을 제거한 개선 FSM 비교" />
+              <figcaption>연산 전용 SUM state를 제거한 FSM 전후 구조</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">01 / FSM &amp; counter</span>
+              <h3>4-state 기준 설계에서 SUM을 제거</h3>
+              <p>기존 제어기는 IDLE → MAC → SUM → IDLE로 결과를 넘겼습니다. 2차 개선에서는 SUM이 수행하던 출력 제어를 IDLE 기준으로 옮겨 IDLE → MAC → IDLE 흐름으로 단순화하고, 계수 기록을 위한 WRITE만 독립 상태로 유지했습니다.</p>
+              <ul class="detail-points">
+                <li><strong>State:</strong> IDLE·WRITE·MAC·SUM의 4개 상태에서 연산용 SUM을 제거</li>
+                <li><strong>Counter:</strong> MAC 종료 후 11에 머물던 값을 0으로 복귀</li>
+                <li><strong>Timing:</strong> IDLE에서는 항상 cnt=0을 유지해 clear와 다음 sample 시작점을 명확화</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="evidence-item" data-reveal>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">02 / Stable configuration</span>
+              <h3>필터 길이를 한 번의 MAC 동안 고정</h3>
+              <p>외부 입력 <code>iNumOfCoeff</code>를 enable 계산에 바로 사용하면 연산 도중 값이 바뀌었을 때 MAC별 활성 구간이 흔들릴 수 있습니다. 그래서 <code>rNumOfCoeff</code>를 추가하고 MAC 상태가 아닐 때만 값을 latch했습니다.</p>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>시점</th><th>외부 입력</th><th>내부 기준</th><th>동작</th></tr></thead>
+                  <tbody>
+                    <tr><td>연산 시작</td><td>33 taps</td><td>33 taps</td><td>17 folded coeff 기준</td></tr>
+                    <tr><td>MAC 수행 중</td><td>33 → 63</td><td>33 유지</td><td>현재 sample 보호</td></tr>
+                    <tr><td>다음 IDLE</td><td>63 taps</td><td>63 갱신</td><td>다음 sample부터 반영</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual evidence-visual-waveform">
+              <img src="/assets/images/reports/cpc-wide-accumulator-waveform.png" alt="양수와 음수 누적값이 25비트 누산기에 유지되고 clear 신호에서 0으로 초기화되는 시뮬레이션 파형" />
+              <figcaption>25-bit 누산과 clear timing을 확인한 양·음수 파형</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">03 / Numeric path</span>
+              <h3>중간 clipping 없이 끝에서 한 번만 포화</h3>
+              <p>3-bit signed sample의 대칭 합은 4-bit, 16-bit signed coefficient와의 곱은 20-bit가 필요합니다. 최대 32개 folded coefficient를 누적할 때 필요한 5-bit 여유를 더해 MAC accumulator를 25-bit로 통일했습니다.</p>
+              <div class="evidence-metrics" aria-label="누산 경로 검증 값">
+                <div><span>Positive</span><strong>112K → 336K</strong><small>25-bit 범위에서 유지</small></div>
+                <div><span>Clear</span><strong>336K → 0</strong><small>clear timing 분리</small></div>
+                <div><span>Negative</span><strong>−112K → −560K</strong><small>중간 16-bit clip 없음</small></div>
+              </div>
+              <div class="deep-note"><strong>결과:</strong> 각 MAC 또는 중간 adder에서 값을 자르지 않고, wide final sum 뒤에서만 signed 16-bit saturation을 적용하도록 기준을 통일했습니다.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="deep-dive" aria-labelledby="cpc-third">
+        <header class="deep-heading" data-reveal>
+          <div><span class="section-index">Third presentation review / Resource</span><h2 id="cpc-third">3차 발표 심사에서 병렬도를 절반으로</h2></div>
+          <p>3차 발표 심사에서는 12 MHz 시스템의 600 kHz 샘플이 20클록마다 들어온다는 점에 주목했습니다. 최대 32개의 folded coefficient를 두 MAC이 16회씩 처리해도 clear·setup을 포함해 샘플 주기 안에 완료할 수 있어 자원을 더 줄일 수 있었습니다.</p>
+        </header>
+        <div class="deep-stack">
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>01 / Architecture trade-off</span><h3>남는 시간으로 공간을 절약</h3></div>
+            <div class="deep-card-body">
+              <div class="architecture" aria-label="자원 절감을 위한 처리량 계산">
+                <div><strong>20 cycles</strong><br />한 sample period</div>
+                <div><strong>32 ÷ 2</strong><br />16 MAC cycles</div>
+                <div><strong>4 cycles</strong><br />clear·setup 여유</div>
+              </div>
+              <p>4개의 SRAM bank와 MAC을 각각 2개로 줄이고, 각 bank가 16개의 coefficient를 담당하게 했습니다. MAC frame은 <code>cnt=0..16</code>으로 고정하고 짧은 필터는 frame 자체를 줄이는 대신 유효 구간 이후의 MAC enable을 꺼서 output-valid 시점을 일정하게 유지했습니다.</p>
+              <ul class="detail-points">
+                <li><strong>cnt=0:</strong> accumulator clear와 setup</li>
+                <li><strong>cnt=1..16:</strong> 두 경로가 최대 32개의 folded coefficient 누적</li>
+                <li><strong>Masking:</strong> 짧은 필터는 필요한 cycle 이후 accumulator 값을 유지</li>
+                <li><strong>Interface:</strong> 마지막 counter에서 <code>oDone</code>, 출력 latch cycle에서 <code>oValid</code> 발생</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="deep-card" data-reveal>
+            <div class="deep-card-title"><span>02 / Synthesis comparison</span><h3>최상위 설계 LUT 38.7% 감소</h3></div>
+            <div class="deep-card-body">
+              <p>2차 구조와 3차 구조를 같은 단위로 합성해 최상위와 하위 블록별 LUT·FF 사용량을 비교했습니다. 병렬 경로를 직접 줄인 MAC은 거의 절반, 제어기와 메모리 주변 로직도 함께 감소했습니다.</p>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Module</th><th>2차 LUT / FF</th><th>3차 LUT / FF</th><th>감소율 LUT / FF</th></tr></thead>
+                  <tbody>
+                    <tr><td>FirTop</td><td>815 / 897</td><td>500 / 818</td><td><strong>38.7% / 8.8%</strong></td></tr>
+                    <tr><td>Controller</td><td>405 / 13</td><td>245 / 8</td><td>39.5% / 38.5%</td></tr>
+                    <tr><td>MAC total</td><td>243 / 100</td><td>122 / 50</td><td><strong>49.8% / 50.0%</strong></td></tr>
+                    <tr><td>SRAM total</td><td>220 / 576</td><td>159 / 544</td><td>27.7% / 5.6%</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="deep-note"><strong>해석:</strong> coefficient 저장 용량은 32개로 유지했기 때문에 SRAM FF 감소폭은 작지만, MAC 경로 수를 절반으로 줄여 곱셈·누산 로직은 LUT와 FF 모두 약 50% 감소했습니다.</div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="report-showcase" aria-labelledby="cpc-validation">
+        <div class="report-heading" data-reveal>
+          <div><span class="section-index">SoC / FPGA validation</span><h2 id="cpc-validation">시뮬레이션에서 실제 PYNQ 보드까지</h2></div>
+          <p>팀은 최적화한 FIR을 AXI-Lite wrapper에 연결하고 PYNQ-Z2에서 coefficient를 갱신했습니다. RTL 시뮬레이션뿐 아니라 physical pin과 Logic Analyzer로 출력 파형을 확인했습니다.</p>
+        </div>
+        <div class="evidence-list">
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual">
+              <img src="/assets/images/reports/cpc-vivado-block-design.png" alt="Zynq processing system과 AXI SmartConnect, signal generator, AXI-Lite FIR wrapper를 연결한 Vivado block design" />
+              <figcaption>PS·AXI interconnect·FIR wrapper를 연결한 Vivado block design</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">01 / SoC integration</span>
+              <h3>RTL을 독립 IP처럼 사용할 수 있게 확장</h3>
+              <p>AXI-Lite slave wrapper는 PS에서 coefficient SRAM, 필터 길이, update flag를 제어할 수 있게 합니다. FIR은 내부 FSM이나 counter를 외부가 해석하지 않아도 <code>oValid</code>가 올라온 cycle의 <code>oFirOut</code>만 읽을 수 있도록 인터페이스를 정리했습니다.</p>
+              <div class="table-wrap">
+                <table class="tech-table">
+                  <thead><tr><th>Offset</th><th>Register</th><th>Purpose</th></tr></thead>
+                  <tbody>
+                    <tr><td>0x00–0x7C</td><td>COEFF_RAM_00–31</td><td>32개 folded coefficient write</td></tr>
+                    <tr><td>0x80</td><td>REG_NUM_COEFF[5:0]</td><td>filter tap 수 지정</td></tr>
+                    <tr><td>0x84</td><td>REG_UPDATE_FLAG[0]</td><td>update / normal mode 전환</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
+
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual">
+              <img src="/assets/images/reports/cpc-fpga-test-system.png" alt="PYNQ-Z2 FPGA와 Logic Analyzer를 연결하고 여러 디지털 신호를 측정한 테스트 시스템" />
+              <figcaption>PYNQ-Z2 출력과 Logic Analyzer를 연결한 실제 검증 환경</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">02 / Board test</span>
+              <h3>600 kHz sample enable과 필터 출력을 핀에서 관찰</h3>
+              <p>PL의 signal generator가 10 kHz·70 kHz·150 kHz 정현파를 합성해 signed 3-bit 입력을 만들고, FIR 출력과 <code>oValid</code>·<code>oDone</code>을 물리 핀으로 내보냈습니다. Logic Analyzer에서 coefficient write, MAC timing, output-valid 흐름을 실제 클록 기준으로 확인했습니다.</p>
+            </div>
+          </article>
+
+          <article class="evidence-item evidence-wide" data-reveal>
+            <figure class="evidence-visual">
+              <img src="/assets/images/reports/cpc-hardware-vs-simulation.png" alt="LPF HPF BPF BSF 필터에 대해 실제 하드웨어 출력과 Python 시뮬레이션을 비교한 그래프" />
+              <figcaption>LPF·HPF·BPF·BSF에서 비교한 FPGA 출력과 시뮬레이션</figcaption>
+            </figure>
+            <div class="evidence-copy">
+              <span class="evidence-kicker">03 / Cross-check</span>
+              <h3>필터 종류를 바꿔도 예상한 형태를 유지</h3>
+              <p>PYNQ의 Python 환경에서 NumPy로 LPF·HPF·BPF·BSF coefficient를 계산해 AXI-Lite로 전달했습니다. 측정 파형과 시뮬레이션은 sampling 및 3-bit quantization에 따른 차이는 있지만, 각 필터가 통과·차단해야 하는 주파수 성분의 전체 형태가 일치했습니다.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="case-study" aria-labelledby="cpc-role">
+        <div data-reveal><span class="section-index">My contribution</span><h2 id="cpc-role">RTL 자원을 줄이고 검증 가능한 기준을 만들었습니다</h2></div>
+        <div data-reveal>
+          <article class="story-block"><h3>담당 범위</h3><p>저는 CPC 2차·3차 발표 심사를 위한 보완 과정에서 RTL 부분을 담당했습니다. 기존 4-MAC·4-bank 구조의 timing budget을 다시 계산하고, 제어 흐름과 accumulator 폭을 정리한 뒤 2-MAC·2-bank 구조로 축소해 합성 자원 차이를 확인했습니다.</p></article>
+          <article class="story-block"><h3>핵심 판단</h3><p>“병렬 경로가 많을수록 좋다”가 아니라 600 kHz 처리량을 만족하는 최소 병렬도가 무엇인지 계산했습니다. 20클록 중 최대 16클록으로 32개 folded coefficient를 처리할 수 있어, 남는 시간 여유를 하드웨어 자원 절감으로 바꿀 수 있었습니다.</p></article>
+          <article class="story-block"><h3>팀과의 경계</h3><p>프로젝트 전체에는 AXI-Lite wrapper, PYNQ 제어 소프트웨어, 실제 보드 측정이 포함됩니다. 포트폴리오에서는 이들을 팀의 통합 결과로 구분하고, 제 개인 기여는 RTL 병렬도·제어 timing·wide accumulation과 합성 비교에 명확히 두었습니다.</p></article>
+          <article class="story-block">
+            <h3>결과</h3>
+            <dl class="metric-grid" aria-label="CPC FIR 최적화 결과">
+              <div><dt>MAC paths</dt><dd><strong>−50%</strong><small>4개에서 2개</small></dd></div>
+              <div><dt>Top LUT</dt><dd><strong>−38.7%</strong><small>815에서 500</small></dd></div>
+              <div><dt>Throughput</dt><dd><strong>600 kHz</strong><small>20 clocks/sample 유지</small></dd></div>
+            </dl>
+          </article>
+          <article class="story-block"><h3>배운 점</h3><p>최적화는 단순히 회로를 작게 만드는 작업이 아니라, latency와 throughput의 요구 조건을 먼저 수치화하고 그 범위에서 구조를 다시 선택하는 과정이었습니다. 또한 2차에서 명확한 상태·counter·data width 기준을 만든 것이 3차 자원 축소와 FPGA 검증의 기반이 됐습니다.</p></article>
+        </div>
+      </section>
+
+      <nav class="project-nav" aria-label="다른 프로젝트">
+        <a href="/projects/"><span>← Project timeline</span><strong>전체 프로젝트</strong></a>
+        <a href="/projects/seoul-traffic-mlp/"><span>Next project →</span><strong>02. Seoul Traffic MLP</strong></a>
+      </nav>
+    </main>
+
+    <footer class="site-footer"><div class="footer-inner shell"><span>© <span data-year></span> 허준범</span><a href="https://github.com/kui-lgtm" target="_blank" rel="noreferrer">GitHub ↗</a></div></footer>
+  </body>
+</html>

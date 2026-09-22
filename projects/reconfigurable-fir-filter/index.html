@@ -26,7 +26,7 @@
     <main id="main" class="shell">
       <header class="project-hero">
         <div data-reveal>
-          <nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>07</span></nav>
+          <nav class="breadcrumb" aria-label="현재 위치"><a href="/projects/">Projects</a><span>/</span><span>08</span></nav>
           <h1>Reconfigurable FIR Filter</h1>
           <p class="lead">가변 길이 계수를 런타임에 갱신하고 4개의 SRAM·MAC 경로로 병렬 처리하는 FIR 필터를 Verilog RTL로 설계하고, 파형 기반 시나리오로 데이터 흐름과 saturation을 검증했습니다.</p>
         </div>
@@ -268,14 +268,14 @@ else
               <div><dt>Output bound</dt><dd><strong>±16-bit</strong><small>−32768–32767</small></dd></div>
             </dl>
           </article>
-          <article class="story-block"><h3>개선 방향</h3><p>다음 버전에서는 연산 시작 시 <code>iNumOfCoeff</code>를 레지스터에 고정해 한 샘플 동안의 불변성을 보장할 수 있습니다. FSM 상태를 단순화하고, 남는 클록 여유를 이용해 SRAM·MAC 수를 줄이며, MAC 내부에서 더 이른 saturation 판정을 수행하는 방안도 검토했습니다.</p></article>
+          <article class="story-block"><h3>2026 CPC 발표 심사에서 실현</h3><p>이 개선안은 2026 프로젝트 보고서 챌린지의 2차·3차 발표 심사 보완으로 이어졌습니다. <code>iNumOfCoeff</code> latch와 25-bit 누산으로 연산 기준을 안정화하고, 20클록의 sample period를 이용해 SRAM·MAC을 4개에서 2개로 축소했습니다. <a href="/projects/cpc-fir-optimization/">CPC FIR RTL Optimization에서 후속 과정을 확인할 수 있습니다.</a></p></article>
           <article class="story-block"><h3>배운 점</h3><p>여러 모듈의 인터페이스가 얽힌 RTL은 문제를 구조적으로 분리해야 디버깅할 수 있었습니다. 최종 출력에서 시작해 합산, 누산, 메모리, 제어 신호 순으로 역추적하는 방식에 익숙해졌습니다.</p></article>
         </div>
       </section>
 
       <nav class="project-nav" aria-label="다른 프로젝트">
-        <a href="/projects/colored-mnist-classifier/"><span>← Previous project</span><strong>06. Colored MNIST</strong></a>
-        <a href="/projects/arm-image-optimization/"><span>Next project →</span><strong>08. ARM Image Optimization</strong></a>
+        <a href="/projects/colored-mnist-classifier/"><span>← Previous project</span><strong>07. Colored MNIST</strong></a>
+        <a href="/projects/ai-iot-energy-esg/"><span>Next project →</span><strong>09. AI · IoT Energy ESG</strong></a>
       </nav>
     </main>
 

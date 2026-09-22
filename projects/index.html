@@ -27,10 +27,25 @@
       <header class="page-hero" data-reveal>
         <p class="eyebrow">Project timeline / Newest first</p>
         <h1>Projects</h1>
-        <p>최근 학기부터 시간순으로 프로젝트를 묶었습니다. 각 과목에서 발견한 제약과 하드웨어·코드를 연결한 과정을 함께 기록합니다.</p>
+        <p>최근 학기부터 시간순으로 프로젝트를 묶었습니다. 교과목과 외부 활동에서 발견한 제약과 하드웨어·코드를 연결한 과정을 함께 기록합니다.</p>
       </header>
 
       <section class="course-groups" aria-label="과목별 프로젝트 목록">
+        <section class="course-group" aria-labelledby="cpc-2026">
+          <header class="course-heading" data-reveal>
+            <div><span class="section-index">2026 · Competition</span><h2 id="cpc-2026">Class Project Challenge</h2></div>
+            <div class="course-summary"><strong>프로젝트 보고서 챌린지 · 시스템 SW</strong><p>2025-2 교과목 FIR 설계를 발표 심사마다 보완해 자원 효율과 FPGA 적용성을 검증</p></div>
+          </header>
+          <div class="work-list">
+            <a class="work-row" href="/projects/cpc-fir-optimization/" data-reveal>
+              <span class="project-no">01</span>
+              <h3>CPC FIR RTL Optimization</h3>
+              <p>2차·3차 발표 심사에서 4-MAC·4-bank를 2-MAC·2-bank로 재설계해 FirTop LUT를 38.7% 절감</p>
+              <span class="row-arrow" aria-hidden="true">→</span>
+            </a>
+          </div>
+        </section>
+
         <section class="course-group" aria-labelledby="spring-2026">
           <header class="course-heading" data-reveal>
             <div><span class="section-index">2026 · Spring</span><h2 id="spring-2026">2026년 1학기</h2></div>
@@ -39,11 +54,11 @@
           <div class="semester-course-grid">
             <section class="semester-course" aria-labelledby="neural-network-course" data-reveal>
               <header class="semester-course-title"><span>Course 01</span><h3 id="neural-network-course">인공신경망</h3><p>교통량·날씨·달력 맥락을 연결한 혼잡 예측 모델</p></header>
-              <div class="work-list"><a class="work-row" href="/projects/seoul-traffic-mlp/"><span class="project-no">01</span><h3>Seoul Traffic MLP</h3><p>201만 건과 22개 feature로 시간대별 혼잡을 91.35% 정확도로 분류</p><span class="row-arrow" aria-hidden="true">→</span></a></div>
+              <div class="work-list"><a class="work-row" href="/projects/seoul-traffic-mlp/"><span class="project-no">02</span><h3>Seoul Traffic MLP</h3><p>201만 건과 22개 feature로 시간대별 혼잡을 91.35% 정확도로 분류</p><span class="row-arrow" aria-hidden="true">→</span></a></div>
             </section>
             <section class="semester-course" aria-labelledby="operating-systems-course" data-reveal>
               <header class="semester-course-title"><span>Course 02</span><h3 id="operating-systems-course">운영체제</h3><p>process·thread·동기화 구조를 실험한 병렬 분류 시스템</p></header>
-              <div class="work-list"><a class="work-row" href="/projects/parallel-spam-classifier/"><span class="project-no">02</span><h3>Parallel Spam Classifier</h3><p>BERT 병목을 8 workers로 병렬화해 5.63× speedup을 검증</p><span class="row-arrow" aria-hidden="true">→</span></a></div>
+              <div class="work-list"><a class="work-row" href="/projects/parallel-spam-classifier/"><span class="project-no">03</span><h3>Parallel Spam Classifier</h3><p>BERT 병목을 8 workers로 병렬화해 5.63× speedup을 검증</p><span class="row-arrow" aria-hidden="true">→</span></a></div>
             </section>
           </div>
         </section>
@@ -55,19 +70,19 @@
           </header>
           <div class="work-list">
             <a class="work-row" href="/projects/dino-jump/" data-reveal>
-              <span class="project-no">03</span>
+              <span class="project-no">04</span>
               <h3>Dino Jump</h3>
               <p>ATtiny4313에서 점프 물리, 페이지 렌더링, 네 종류의 출력 장치를 통합한 게임</p>
               <span class="row-arrow" aria-hidden="true">→</span>
             </a>
             <a class="work-row" href="/projects/cipher-machine/" data-reveal>
-              <span class="project-no">04</span>
+              <span class="project-no">05</span>
               <h3>Cipher Machine</h3>
               <p>PS/2·엔코더·UART를 다섯 개의 ISR로 처리하는 시저 암호 변환 장치</p>
               <span class="row-arrow" aria-hidden="true">→</span>
             </a>
             <a class="work-row" href="/projects/touch-paintbrush/" data-reveal>
-              <span class="project-no">05</span>
+              <span class="project-no">06</span>
               <h3>Touch Paintbrush</h3>
               <p>4단계 터치 필터와 8색 엔코더 팔레트를 구현한 STM32 드로잉 인터페이스</p>
               <span class="row-arrow" aria-hidden="true">→</span>
@@ -85,7 +100,7 @@
               <header class="semester-course-title"><span>Course 01</span><h3 id="machine-learning-course">머신러닝</h3><p>전처리·오류 분석·증강·탐색을 연결한 분류 파이프라인</p></header>
               <div class="work-list">
                 <a class="work-row" href="/projects/colored-mnist-classifier/">
-                  <span class="project-no">06</span>
+                  <span class="project-no">07</span>
                   <h3>Colored MNIST Classifier</h3>
                   <p>전경·배경색 100%, 숫자 98.82%를 달성한 팔레트 + OvO-SVC 파이프라인</p>
                   <span class="row-arrow" aria-hidden="true">→</span>
@@ -96,13 +111,28 @@
               <header class="semester-course-title"><span>Course 02</span><h3 id="digital-system-course">디지털시스템설계</h3><p>메모리 병렬화와 파형 검증을 포함한 Verilog RTL 설계</p></header>
               <div class="work-list">
                 <a class="work-row" href="/projects/reconfigurable-fir-filter/">
-                  <span class="project-no">07</span>
+                  <span class="project-no">08</span>
                   <h3>Reconfigurable FIR Filter</h3>
                   <p>4-Parallel SRAM·MAC, 가변 길이, saturation을 구현하고 검증한 FIR 필터</p>
                   <span class="row-arrow" aria-hidden="true">→</span>
                 </a>
               </div>
             </section>
+          </div>
+        </section>
+
+        <section class="course-group" aria-labelledby="hani-2025">
+          <header class="course-heading" data-reveal>
+            <div><span class="section-index">2025 · External</span><h2 id="hani-2025">한이음 드림업</h2></div>
+            <div class="course-summary"><strong>2025.03–2025.11</strong><p>센서·서버·AI·웹을 연결한 에너지 ESG 시스템</p></div>
+          </header>
+          <div class="work-list">
+            <a class="work-row" href="/projects/ai-iot-energy-esg/" data-reveal>
+              <span class="project-no">09</span>
+              <h3>AI · IoT Energy ESG</h3>
+              <p>전력·환경 데이터 수집부터 NILM 분석, 이상 탐지, ESG 지표 생성까지 구현한 팀 프로젝트</p>
+              <span class="row-arrow" aria-hidden="true">→</span>
+            </a>
           </div>
         </section>
 
@@ -113,7 +143,7 @@
           </header>
           <div class="work-list">
             <a class="work-row" href="/projects/arm-image-optimization/" data-reveal>
-              <span class="project-no">08</span>
+              <span class="project-no">10</span>
               <h3>ARM Image Optimization</h3>
               <p>RGBA 채널 재배치와 다중 레지스터 명령으로 최대 7.51× 개선한 프로젝트</p>
               <span class="row-arrow" aria-hidden="true">→</span>
