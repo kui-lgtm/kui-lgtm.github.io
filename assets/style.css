@@ -372,6 +372,7 @@ a {
 .project-card {
   position: relative;
   display: flex;
+  grid-column: span 4;
   flex-direction: column;
   min-height: 31rem;
   overflow: hidden;
@@ -388,18 +389,12 @@ a {
   transform: translateY(-5px);
 }
 
-.project-card:nth-child(1) {
+.project-card.project-card-featured {
   grid-column: span 6;
 }
 
-.project-card:nth-child(2),
-.project-card:nth-child(3) {
+.project-card.project-card-compact {
   grid-column: span 3;
-}
-
-.project-card:nth-child(4),
-.project-card:nth-child(5) {
-  grid-column: span 6;
 }
 
 .project-card.project-card-wide {
